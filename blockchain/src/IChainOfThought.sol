@@ -1,14 +1,16 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
+
 interface IChainOfThought {
 
     // ======================
     // Contract Events
+
     event PostPublished(bytes32 indexed postHash, address indexed author);
     event PostAccessed(bytes32 indexed postHash, address indexed reader);
     event AliasChanged(address indexed user, bytes10 newAlias);
-    event TokensPurchased(address indexed user, uint amount);
+    event UserBalanceChanged(address indexed user, uint newBalance);
 
     // ======================
     // Management
@@ -47,6 +49,11 @@ interface IChainOfThought {
     function getAccessPrice() external view returns (uint tokensToAccess);
 
     /**
+    * @dev Get the token cost to add a post to the personal favorite list; should be a multiple of the access price
+    */
+    function getFavoritePrice() external view returns (uint tokensToFAvorite);
+
+    /**
     * @dev Set the price to change alias
     */
     function setRenamePrice(uint tokensToRename) external;
@@ -55,7 +62,6 @@ interface IChainOfThought {
     * @dev Get the price to change alias
     */
     function getRenamePrice() external view returns (uint tokensToRename);
-
 
     /**
     * @dev Set the interval where token rewards are claimable
@@ -67,8 +73,22 @@ interface IChainOfThought {
     */
     function getRewardInterval() external view returns (uint intervalToRewards);
 
+    /**
+    * @dev Set the amount of claimable token rewards
+    */
+    function setRewardAmount(uint rewardTokenAmount) external;
+
+    /**
+    * @dev Get the amount of claimable token rewards
+    */
+    function getRewardAmount() external view returns (uint rewardTokenAmount);
+
     // ======================
-    // Publishing Posts
+
+    /**
+    * @dev Estimate the thought token cost of publishing a new post; does not change the state
+    */
+    function estimatePostCost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (uint);    // Publishing Posts
 
     /**
     * @dev Publish a new post; costs tokens
@@ -76,14 +96,9 @@ interface IChainOfThought {
     function publishPost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external;
 
     /**
-    * @dev Estimate the thought token cost of publishing a new post; does not change the state
-    */
-    function estimatePostCost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (uint);
-
-    /**
     * @dev Get the hash of a post based on its content
     */
-    function getPostHash(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (uint);
+    function getPostHash(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (bytes32);
 
     // ======================
     // Listing Access
@@ -91,71 +106,76 @@ interface IChainOfThought {
     /**
     * @dev Get all post listing (title, author, icon, date)
     */
-    function posts() external view returns (bytes32[] memory allPostHashes);
+    function allPosts() external view returns (bytes32[] memory allPostHashes);
 
     /**
     * @dev Get all favorized posts
     */
-    function favorites() external view returns (bytes32[] memory favoritePostHashes);
+    function userFavoritePosts() external view returns (bytes32[] memory favoritePostHashes);
 
     /**
     * @dev Get all posts of the personal access list
     */
-    function accessed() external view returns (bytes32[] memory accessedPostHashes);
+    function userAccessedPosts() external view returns (bytes32[] memory accessedPostHashes);
+
+    /**
+    * @dev Get all posts that the user created
+    */
+    function userWrittenPosts() external view returns (bytes32[] memory ownPostHashes);
 
     // ======================
     // Viewing Posts
 
     /**
-    * @dev
+    * @dev Adds the post to the personal access list; costs tokens
     */
-    function addPostToAccessList(uint postId) external; // adds the post to the personal access list; costs tokens
+    function addPostToAccessList(bytes32 postHash) external;
 
     /**
-    * @dev
+    * @dev Adds the post to the favorites; costs tokens; needs to be in the personal access list
     */
-    function addPostToFavorites(uint postId) external; // adds the post to the favorites; costs tokens
+    function addPostToFavorites(bytes32 postHash) external;
 
     /**
-    * @dev
+    * @dev for moderators, will hide the post from the listing
     */
-    function flagPostAsDeleted(uint postId) external; // for moderators, will hide the post from the listing
+    function flagPostAsHidden(bytes32 postHash) external;
 
     // ======================
     // User Interaction
 
     /**
-    * @dev
+    * @dev Check if the user has a daily reward available
     */
-    function rewardAvailable() external view returns (bool); // whether the daily reward is available to claim
+    function rewardAvailable() external view returns (bool isAvailable);
 
     /**
-    * @dev
+    * @dev Claim the available reward
     */
-    function claimReward() external; // claim daily reward and receive tokens
+    function claimReward() external;
 
     /**
-    * @dev
+    * @dev Change the alias of the user; costs tokens
     */
-    function changeAlias(bytes10 newAlias) external; // change the alias, costs tokens
+    function changeAlias(bytes10 newAlias) external;
 
     /**
-    * @dev
+    * @dev Get the current user alias; if not set, returns the address
     */
-    function getAlias() external view returns (string memory userAlias); // get the current user alias
+    function getAlias() external view returns (string memory userAlias);
 
     /**
-    * @dev
+    * @dev Get the alias of a specific user; if not set, returns the address
     */
-    function buyTokens() external payable; // buy additional thought tokens with eth, amount determined by value
+    function getAliasOf(address user) external view returns (string memory userAlias);
 
     /**
-    * @dev
+    * @dev Buy additional thought tokens with ETH; amount determined by the current token value
     */
-    function getTokens() external view returns (uint); // get the token balance of the current user
+    function buyTokens() external payable;
 
     /**
-    * @dev
+    * @dev Get the token balance of the current user
     */
-    function isModerator() external view returns (bool); // check if the current user is a moderator
+    function getTokenBalance() external view returns (uint);
 }

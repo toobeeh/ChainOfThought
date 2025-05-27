@@ -8,7 +8,7 @@ import {ChainOfThought} from "../src/ChainOfThought.sol";
 contract BasicDeploymentScript {
     function deployContracts() public {
         ThoughtToken thoughtToken = new ThoughtToken();
-        ChainOfThought chainOfThought = new ChainOfThought();
+        ChainOfThought chainOfThought = new ChainOfThought(address (thoughtToken));
     }
 }
 
