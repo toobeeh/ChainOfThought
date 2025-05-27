@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "generate-types": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json"
+    "generate:abi": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json"
   },
   "private": true,
   "dependencies": {
