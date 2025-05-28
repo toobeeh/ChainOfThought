@@ -2,20 +2,12 @@
 pragma solidity ^0.8.10;
 
 import "./IChainOfThought.sol";
-import {IThoughtToken} from "./IThoughtToken.sol";
-import {IERC223Recipient} from "./erc223/IERC223Recipient.sol";
 import {AccessControl} from "../dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol";
+import {IERC223Recipient} from "./erc223/IERC223Recipient.sol";
+import {IThoughtToken} from "./IThoughtToken.sol";
 import {Strings} from "../dependencies/@openzeppelin-contracts-5.3.0/utils/Strings.sol";
 
 contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
-
-    struct PostStats {
-        uint favorites;
-        uint accesses;
-        bytes32[] references;
-        address author;
-        bool hidden;
-    }
 
     // Constants
     IThoughtToken private _thoughtTokenContract;
@@ -29,7 +21,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     uint private _rewardIntervalSeconds = 86400; // 24 hours
     uint private _rewardAmount = 1000; // 1000 tokens per day
     uint private _iconTokenPrice = 1000; // 1000 tokens for a post icon
-    uint private _iconByteLength = 16 * 16 * 3; // 16x16 icon, 3 bytes per pixel (hex color code)
+    uint private _iconByteLength = 32 * 32 * 3; // 32x32 icon, 3 bytes per pixel (hex color code)
 
     // User state management
     mapping(address => bytes20) private _aliases; // mapping of the user's current aliases
@@ -123,13 +115,6 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     // ======================
     // Publishing Posts
 
-    function _stripIcon(bytes calldata icon) internal view returns (bytes memory) {
-        if (icon.length > _iconByteLength) {
-            return bytes(icon[:_iconByteLength]);
-        }
-        return icon;
-    }
-
     function estimatePostCost(
         string calldata title,
         string calldata content,
@@ -147,8 +132,8 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         string calldata content,
         bytes calldata icon,
         bytes32 psPostHash
-    ) public view override returns (bytes32) {
-        return keccak256(abi.encodePacked(title, content, _stripIcon(icon), psPostHash));
+    ) public pure override returns (bytes32) {
+        return keccak256(abi.encodePacked(title, content, icon, psPostHash));
     }
 
     function publishPost(
@@ -156,28 +141,51 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         string calldata content,
         bytes calldata icon,
         bytes32 psPostHash
-    ) external override {
+    ) external override returns (bytes32) {
         require(bytes(title).length > 0, "Title cannot be empty");
         require(bytes(content).length > 0, "Content cannot be empty");
+        require(icon.length == _iconByteLength || icon.length == 0, "Icon size exceeds maximum allowed size");
 
         uint postCost = estimatePostCost(title, content, icon, psPostHash);
         require(_thoughtTokenContract.balanceOf(msg.sender) >= postCost, "Insufficient tokens to publish post");
 
         // Transfer tokens for post cost
-        require(_thoughtTokenContract.burn(postCost, address(this)), "Token burn failed");
+        require(_thoughtTokenContract.burn(postCost, msg.sender), "Token burn failed");
 
         // Create post hash
-        bytes32 postHash = keccak256(abi.encodePacked(title, content, _stripIcon(icon), psPostHash));
+        bytes32 postHash = keccak256(abi.encodePacked(title, content, icon, psPostHash));
+
+        // add as ps
+        if(_postStats[psPostHash].author != address(0)) {
+
+            // require referenced post to be in access list or to be own post
+            bytes32[] memory accessedPosts = _postAccessList[msg.sender];
+            bool isReferencable = _postStats[psPostHash].author == msg.sender; // allow own post reference
+            for (uint i = 0; i < accessedPosts.length && !isReferencable; i++) {
+                if (accessedPosts[i] == psPostHash) {
+                    isReferencable = true;
+                    break;
+                }
+            }
+            require(isReferencable, "Referenced post must be in access list or own post");
+
+            _postStats[psPostHash].references.push(postHash);
+        }
+        else {
+            psPostHash = bytes32(0); // reset if psPostHash does not exist
+        }
 
         // Store post data
         bytes32[] memory references;
-        PostStats memory postStats = PostStats(0, 0, references, msg.sender, false);
+        PostStats memory postStats = PostStats(0, 0, references, msg.sender, false, psPostHash);
         _postHashes.push(postHash);
         _postStats[postHash] = postStats;
         _userPosts[msg.sender].push(postHash);
 
         // Emit event
         emit PostPublished(postHash, msg.sender);
+
+        return postHash;
     }
 
     // =======================
@@ -185,6 +193,12 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
     function allPosts() external view override returns (bytes32[] memory) {
         return _postHashes;
+    }
+
+    function getPostStats(bytes32 postHash) external view returns (PostStats memory){
+        require(_postStats[postHash].author != address(0), "Post does not exist");
+        require(!_postStats[postHash].hidden, "Post is hidden");
+        return _postStats[postHash];
     }
 
     function userFavoritePosts() external view override returns (bytes32[] memory) {
@@ -205,6 +219,13 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     function addPostToAccessList(bytes32 postHash) external override {
         require(_postStats[postHash].author != address(0), "Post does not exist");
         require(_thoughtTokenContract.balanceOf(msg.sender) >= _tokensToAccess, "Insufficient tokens to access post");
+        require(_postStats[postHash].author != msg.sender, "Cannot access your own post");
+
+        // check if already in access list
+        bytes32[] memory accessedPosts = _postAccessList[msg.sender];
+        for (uint i = 0; i < accessedPosts.length; i++) {
+            require(accessedPosts[i] != postHash, "Post already in access list");
+        }
 
         // Transfer tokens for access to post author
         address owner = _postStats[postHash].author;
@@ -220,10 +241,9 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
     function addPostToFavorites(bytes32 postHash) external override {
         require(_postStats[postHash].author != address(0), "Post does not exist");
-        require(_postStats[postHash].author != msg.sender, "Cannot favorite your own post");
         require(_thoughtTokenContract.balanceOf(msg.sender) >= getFavoritePrice(), "Insufficient tokens to favorite post");
 
-        // check if in access list
+        // check if in access list, also rules out being own post
         bool isInAccessList = false;
         bytes32[] memory accessedPosts = _postAccessList[msg.sender];
         for (uint i = 0; i < accessedPosts.length; i++) {
@@ -242,7 +262,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
         // Transfer tokens for favoriting post
         address owner = _postStats[postHash].author;
-        require(_thoughtTokenContract.transfer(_tokensToAccess, msg.sender, owner), "Token transfer failed");
+        require(_thoughtTokenContract.transfer(getFavoritePrice(), msg.sender, owner), "Token transfer failed");
 
         // Add post to user's favorites
         _favoritePosts[msg.sender].push(postHash);

@@ -14,12 +14,14 @@ contract ChainOfThoughtTestBase is Test {
 
     address internal owner;
     address internal moderator;
-    address internal author;
+    address internal author1;
+    address internal author2;
 
     function setUp() public {
         owner = vm.addr(0x1);
         moderator = vm.addr(0x2);
-        author = vm.addr(0x3);
+        author1 = vm.addr(0x3);
+        author2 = vm.addr(0x4);
 
         vm.startPrank(owner, owner);
         thoughtToken = new ThoughtToken();
@@ -35,9 +37,17 @@ contract ChainOfThoughtTestBase is Test {
         _;
     }
 
-    modifier withAuthorBalance(uint balance) {
+    modifier withAuthorBalance(address author, uint balance) {
         vm.startPrank(owner, owner);
         thoughtToken.mint(balance, author);
+        vm.stopPrank();
+        _;
+    }
+
+    modifier withPostExisting(address author) {
+        vm.startPrank(author, author);
+        bytes32 psHash = bytes32(0);
+        bytes32 postHash = chainOfThought.publishPost("A poem", "I think, therefore I am.\nHow beautiful,\ntherefore defined by thoughts defining my being,\nI am only thinking in poems.", new bytes(0), psHash);
         vm.stopPrank();
         _;
     }

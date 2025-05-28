@@ -23,7 +23,7 @@ contract ChainOfThoughtSettingsTest is ChainOfThoughtTestBase {
 
     function test_negativeModeratorRoleCheck() public {
         vm.startPrank(owner, owner);
-        assertFalse(chainOfThought.isModerator(author), "Regular user should not be moderator");
+        assertFalse(chainOfThought.isModerator(author1), "Regular user should not be moderator");
         vm.stopPrank();
     }
 

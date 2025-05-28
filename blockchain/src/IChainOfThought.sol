@@ -11,6 +11,15 @@ interface IChainOfThoughtEvents {
     event UserBalanceChanged(address indexed user, uint newBalance);
 }
 
+struct PostStats {
+    uint favorites;
+    uint accesses;
+    bytes32[] references;
+    address author;
+    bool hidden;
+    bytes32 referencedPostHash;
+}
+
 interface IChainOfThought is IChainOfThoughtEvents {
 
     // ======================
@@ -95,20 +104,25 @@ interface IChainOfThought is IChainOfThoughtEvents {
     /**
     * @dev Publish a new post; costs tokens
     */
-    function publishPost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external;
+    function publishPost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external returns (bytes32 postHash);
 
     /**
     * @dev Get the hash of a post based on its content
     */
-    function getPostHash(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (bytes32);
+    function getPostHash(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (bytes32 postHash);
 
     // ======================
     // Listing Access
 
     /**
-    * @dev Get all post listing (title, author, icon, date)
+    * @dev Get all existing post hashes
     */
     function allPosts() external view returns (bytes32[] memory allPostHashes);
+
+    /**
+    * @dev Get post stats
+    */
+    function getPostStats(bytes32 postHash) external view returns (PostStats memory stats);
 
     /**
     * @dev Get all favorized posts
