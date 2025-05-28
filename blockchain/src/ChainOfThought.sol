@@ -5,6 +5,7 @@ import "./IChainOfThought.sol";
 import {IThoughtToken} from "./IThoughtToken.sol";
 import {IERC223Recipient} from "./erc223/IERC223Recipient.sol";
 import {AccessControl} from "../dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol";
+import {Strings} from "../dependencies/@openzeppelin-contracts-5.3.0/utils/Strings.sol";
 
 contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
@@ -31,8 +32,8 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     uint private _iconByteLength = 16 * 16 * 3; // 16x16 icon, 3 bytes per pixel (hex color code)
 
     // User state management
-    mapping(address => bytes10) private _aliases; // mapping of the user's current aliases
-    mapping(bytes10 => address) private _aliasOwners; // reverse mapping of aliases to their owners
+    mapping(address => bytes20) private _aliases; // mapping of the user's current aliases
+    mapping(bytes20 => address) private _aliasOwners; // reverse mapping of aliases to their owners
     mapping(address => uint) private _lastRewardClaimTimestamps; // unix timestamps of the user's last reward claim
 
     // Post state management
@@ -163,7 +164,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         require(_thoughtTokenContract.balanceOf(msg.sender) >= postCost, "Insufficient tokens to publish post");
 
         // Transfer tokens for post cost
-        require(_thoughtTokenContract.transfer(address(this), postCost), "Token transfer failed");
+        require(_thoughtTokenContract.burn(postCost, address(this)), "Token burn failed");
 
         // Create post hash
         bytes32 postHash = keccak256(abi.encodePacked(title, content, _stripIcon(icon), psPostHash));
@@ -207,7 +208,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
         // Transfer tokens for access to post author
         address owner = _postStats[postHash].author;
-        require(_thoughtTokenContract.transfer(owner, _tokensToAccess), "Token transfer failed");
+        require(_thoughtTokenContract.transfer(_tokensToAccess, msg.sender, owner), "Token transfer failed");
 
         // Add user to post access list
         _postAccessList[msg.sender].push(postHash);
@@ -241,7 +242,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
 
         // Transfer tokens for favoriting post
         address owner = _postStats[postHash].author;
-        require(_thoughtTokenContract.transfer(owner, _tokensToAccess), "Token transfer failed");
+        require(_thoughtTokenContract.transfer(_tokensToAccess, msg.sender, owner), "Token transfer failed");
 
         // Add post to user's favorites
         _favoritePosts[msg.sender].push(postHash);
@@ -281,15 +282,15 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         emit UserBalanceChanged(msg.sender, newBalance);
     }
 
-    function changeAlias(bytes10 newAlias) external override {
-        require(newAlias != bytes10(0), "Alias cannot be empty");
+    function changeAlias(bytes20 newAlias) external override {
+        require(newAlias != bytes20(0), "Alias cannot be empty");
         require(_thoughtTokenContract.balanceOf(msg.sender) >= _tokensToRename, "Insufficient tokens to change alias");
         require(_aliasOwners[newAlias] == address(0), "Alias already taken");
-        require(_thoughtTokenContract.transfer(address(this), _tokensToRename), "Token transfer failed");
+        require(_thoughtTokenContract.burn(_tokensToRename, msg.sender), "Token burn failed");
 
         // Update alias mappings
-        bytes10 oldAlias = _aliases[msg.sender];
-        if (oldAlias != bytes10(0)) {
+        bytes20 oldAlias = _aliases[msg.sender];
+        if (oldAlias != bytes20(0)) {
             delete _aliasOwners[oldAlias]; // Remove old alias owner
         }
         _aliases[msg.sender] = newAlias; // Set new alias
@@ -299,9 +300,9 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     }
 
     function getAliasOf(address user) public view override returns (string memory) {
-        bytes10 _alias = _aliases[user];
-        if (_alias == bytes10(0)) {
-            return string(abi.encodePacked(uint160(user))); // Return address as string if alias not set
+        bytes20 _alias = _aliases[user];
+        if (_alias == bytes20(0)) {
+            return Strings.toHexString(user); // Return address as string if alias not set
         }
         return string(abi.encodePacked(_alias)); // Return the alias as string
     }

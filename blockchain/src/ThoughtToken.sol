@@ -4,17 +4,37 @@ pragma solidity ^0.8.10;
 import {IERC223Recipient} from "./erc223/IERC223Recipient.sol";
 import {IERC223} from "./erc223/IERC223.sol";
 import {IThoughtToken} from "./IThoughtToken.sol";
-import {Ownable} from "../dependencies/@openzeppelin-contracts-5.3.0/access/Ownable.sol";
+import {AccessControl} from "../dependencies/@openzeppelin-contracts-5.3.0/access/AccessControl.sol";
 
-contract ThoughtToken is IThoughtToken, Ownable {
+contract ThoughtToken is IThoughtToken, AccessControl {
     string private constant _name = "ThoughtToken";
     string private constant _symbol = "TT";
     uint8 private constant _decimals = 0;
 
+    bytes32 public constant OWNER_ROLE = keccak256("OWNER_ROLE");
+    bytes32 public constant SUPERVISOR_ROLE = keccak256("SUPERVISOR_ROLE");
+
     uint256 private _totalSupply;
     mapping(address => uint256) private _balances;
 
-    constructor() Ownable(_msgSender()) { }
+    constructor() {
+
+        // Set up roles
+        _setRoleAdmin(SUPERVISOR_ROLE, OWNER_ROLE);
+        _setRoleAdmin(OWNER_ROLE, OWNER_ROLE);
+        _grantRole(OWNER_ROLE, msg.sender);
+        _grantRole(SUPERVISOR_ROLE, msg.sender);
+    }
+
+    function allowSupervisorFor(address account) external onlyRole(OWNER_ROLE) {
+        require(!hasRole(SUPERVISOR_ROLE, account), "Account already has MINTABLE_ROLE");
+        _grantRole(SUPERVISOR_ROLE, account);
+    }
+
+    function disallowSupervisorFor(address account) external onlyRole(OWNER_ROLE) {
+        require(hasRole(SUPERVISOR_ROLE, account), "Account does not have MINTABLE_ROLE");
+        _revokeRole(SUPERVISOR_ROLE, account);
+    }
 
     function name() public pure override returns (string memory)
     {
@@ -46,7 +66,7 @@ contract ThoughtToken is IThoughtToken, Ownable {
     function mint(
         uint256 value,
         address recipient
-    ) external override onlyOwner returns (bool success)
+    ) external override onlyRole(SUPERVISOR_ROLE) returns (bool success)
     {
         require(recipient != address(0), "Cannot mint to zero address");
 
@@ -58,6 +78,22 @@ contract ThoughtToken is IThoughtToken, Ownable {
         return true;
     }
 
+function burn(
+        uint256 value,
+        address target
+    ) external override onlyRole(SUPERVISOR_ROLE) returns (bool success)
+    {
+        require(target != address(0), "Cannot burn from zero address");
+        require(_balances[target] >= value, "Insufficient balance to burn");
+
+        _balances[target] -= value;
+        _totalSupply -= value;
+
+        bytes memory empty;
+        emit Transfer(target, address(0), value, empty);
+        return true;
+    }
+
     function transfer(
         address to,
         uint256 value
@@ -65,6 +101,16 @@ contract ThoughtToken is IThoughtToken, Ownable {
     {
         bytes memory empty;
         return _transfer(msg.sender, to, value, empty);
+    }
+
+    function transfer(
+        uint256 value,
+        address from,
+        address to
+    ) external override returns (bool success)
+    {
+        bytes memory empty;
+        return _transfer(from, to, value, empty);
     }
 
     function transfer(

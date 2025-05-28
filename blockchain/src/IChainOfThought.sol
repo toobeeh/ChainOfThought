@@ -1,16 +1,17 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.10;
 
-
-interface IChainOfThought {
-
+interface IChainOfThoughtEvents {
     // ======================
     // Contract Events
 
     event PostPublished(bytes32 indexed postHash, address indexed author);
     event PostAccessed(bytes32 indexed postHash, address indexed reader);
-    event AliasChanged(address indexed user, bytes10 newAlias);
+    event AliasChanged(address indexed user, bytes20 newAlias);
     event UserBalanceChanged(address indexed user, uint newBalance);
+}
+
+interface IChainOfThought is IChainOfThoughtEvents {
 
     // ======================
     // Management
@@ -51,7 +52,7 @@ interface IChainOfThought {
     /**
     * @dev Get the token cost to add a post to the personal favorite list; should be a multiple of the access price
     */
-    function getFavoritePrice() external view returns (uint tokensToFAvorite);
+    function getFavoritePrice() external view returns (uint tokensToFavorite);
 
     /**
     * @dev Set the price to change alias
@@ -84,11 +85,12 @@ interface IChainOfThought {
     function getRewardAmount() external view returns (uint rewardTokenAmount);
 
     // ======================
+    // Publishing Posts
 
     /**
     * @dev Estimate the thought token cost of publishing a new post; does not change the state
     */
-    function estimatePostCost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (uint);    // Publishing Posts
+    function estimatePostCost(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (uint);
 
     /**
     * @dev Publish a new post; costs tokens
@@ -157,7 +159,7 @@ interface IChainOfThought {
     /**
     * @dev Change the alias of the user; costs tokens
     */
-    function changeAlias(bytes10 newAlias) external;
+    function changeAlias(bytes20 newAlias) external;
 
     /**
     * @dev Get the current user alias; if not set, returns the address
