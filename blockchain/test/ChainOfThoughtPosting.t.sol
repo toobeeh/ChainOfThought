@@ -190,6 +190,9 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase {
         assertEq(favoriteList.length, 1, "Favorites list should contain one post");
         assertEq32(favoriteList[0], postHash, "Favorites post hash should match the post hash");
 
+        PostStats memory stats = chainOfThought.getPostStats(postHash);
+        assertEq(stats.favorites, 1, "Post should have one favorite");
+
         vm.stopPrank();
     }
 
