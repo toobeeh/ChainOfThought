@@ -18,8 +18,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: blockchain
-        run: |
-          forge soldeer install
+        run: forge soldeer install
 
       - name: Run tests
         working-directory: blockchain
