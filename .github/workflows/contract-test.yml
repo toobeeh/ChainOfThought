@@ -1,0 +1,23 @@
+on: [push]
+
+name: Test Contracts
+
+jobs:
+  check:
+    name: Run foundry tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install dependencies
+        run: forge soldeer install
+
+      - name: Run tests
+        run: forge test
