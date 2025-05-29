@@ -2,9 +2,15 @@
     <h1>
         <app-typewriter
             [characterDelay]="20"
-            [cursorTimeout]="1000"
-            writerKey="home-title" [content]="'welcome back ..'" />
+            [cursorTimeout]="2000"
+            writerKey="home-title" [content]="'welcome back ~'" />
     </h1>
+
+    <app-typewriter
+            [characterDelay]="10"
+            [cursorTimeout]="2000"
+            waitForWriter="home-title"
+            writerKey="home-info" [content]="'chain of cloud is a space for thinkers,\na forge to craft thoughts into shining gems;\nimmortalized in the consensus of the blockchain.'" />
 
     <div *appWhenWriterFinished="'home-intro'"  class="home-details">
         <span>alias:</span><b>{{author.alias}}</b>

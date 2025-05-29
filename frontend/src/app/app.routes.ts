@@ -3,6 +3,7 @@ import {LandingComponent} from "./pages/landing/landing.component";
 import {UserHomeComponent} from "./pages/user-home/user-home.component";
 import {authGuard} from "./guards/auth.guard";
 import {BuyComponent} from "./pages/buy/buy.component";
+import {AliasComponent} from "./pages/alias/alias.component";
 
 export const routes: Routes = [
     {
@@ -17,6 +18,11 @@ export const routes: Routes = [
     {
         path: "buy",
         component: BuyComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "alias",
+        component: AliasComponent,
         canActivate: [authGuard]
     }
 ];

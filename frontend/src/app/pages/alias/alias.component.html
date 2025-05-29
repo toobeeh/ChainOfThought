@@ -1,0 +1,23 @@
+<h1>
+    <app-typewriter
+            [characterDelay]="20"
+            [cursorTimeout]="1000"
+            writerKey="alias-title" content="choose a new alias"
+    />
+</h1>
+
+<p>
+    <app-typewriter
+            [characterDelay]="5"
+            [cursorTimeout]="0"
+            writerKey="alias-intro"
+            [content]="'your alias is the name that is visible to other authors when they read your post.\nchanging your alias costs ' + (changeCost$ | async) + ' thought tokens.\nenter your new alias below.'"
+    />
+</p>
+
+<br>
+
+<div *appWhenWriterFinished="'alias-intro'" class="alias-form">
+    <input type="text" value="" #alias placeholder="author alias" maxlength="20">
+    <app-button content="set new alias" style="width:auto"  (click)="rename(alias.value)" />
+</div>

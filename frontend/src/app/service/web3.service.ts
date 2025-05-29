@@ -16,36 +16,61 @@ export class Web3Service {
 
   constructor() { }
 
-  private async getState(): Promise<web3State> {
+  private async signState(): Promise<web3State> {
     if (this._state === undefined) {
       const provider = new BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
       const signedToken = await signer.signMessage("This message will be signed to authenticate you. (Nonce: " + Date.now() + ")");
       this._state = {provider, signer, signedToken};
+      sessionStorage.setItem("web3auth", signedToken);
     }
     return this._state;
   }
 
-  public getRequiredToken() {
-    if(this._state === undefined) {
-      throw new Error("Web3Service not initialized");
+  private async readExistingState(): Promise<web3State | undefined> {
+    const existingToken = sessionStorage.getItem("web3auth");
+    if (existingToken && existingToken.length > 0) {
+      try {
+        const provider = new BrowserProvider((window as any).ethereum);
+        const signer = await provider.getSigner();
+        return {provider, signer, signedToken: existingToken};
+      } catch (e) {
+        return undefined;
+      }
     }
-
-    return this._state.signedToken;
+    return undefined;
   }
 
-  public getRequiredSigner(): JsonRpcSigner {
+  private async getState(): Promise<web3State | undefined> {
     if (this._state === undefined) {
+      this._state = await this.readExistingState();
+    }
+    return this._state;
+  }
+
+  public async getRequiredToken() {
+    const state = await this.getState();
+    if(state === undefined) {
       throw new Error("Web3Service not initialized");
     }
-    return this._state.signer;
+
+    return state.signedToken;
+  }
+
+  public async getRequiredSigner(): Promise<JsonRpcSigner> {
+    const state = await this.getState();
+    if (state === undefined) {
+      throw new Error("Web3Service not initialized");
+    }
+    return state.signer;
   }
 
   public async authenticate() {
-    await this.getState();
+    await this.signState();
   }
 
-  public get isAuthenticated(): boolean {
-    return this._state !== undefined;
+  public async isAuthenticated(): Promise<boolean> {
+    const state = await this.getState();
+    return state !== undefined;
   }
 }

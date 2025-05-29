@@ -19,9 +19,9 @@ export class ChainOfThoughtService {
    * Throws if not instanced & web3 service has not authenticated
    * @private
    */
-  public get contract(): ChainOfThought {
+  public async getContract(): Promise<ChainOfThought> {
     if (!this._contract) {
-      this._contract = ChainOfThought__factory.connect(environment.contractAddress, this.web3Service.getRequiredSigner());
+      this._contract = ChainOfThought__factory.connect(environment.contractAddress, await this.web3Service.getRequiredSigner());
     }
     return this._contract;
   }

@@ -3,7 +3,7 @@ import {TypewriterComponent} from "../../components/typewriter/typewriter.compon
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
-import {map, Observable} from "rxjs";
+import {map, Observable, switchMap} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {AsyncPipe} from "@angular/common";
 import {ethers, toBigInt} from "ethers";
@@ -29,7 +29,8 @@ export class BuyComponent {
       @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
       @Inject(Router) private router: Router
   ) {
-    this.tokenCost$ = fromPromise(this.chainOfThoughtService.contract.getTokenValue()).pipe(
+    this.tokenCost$ = fromPromise(this.chainOfThoughtService.getContract()).pipe(
+      switchMap(contract => contract.getTokenValue()),
       map(value => ethers.formatEther(value)+ " ETH")
     );
   }
@@ -41,8 +42,8 @@ export class BuyComponent {
       return;
     }
 
-    const cost = await this.chainOfThoughtService.contract.getTokenValue() * toBigInt(parsedAmount);
-    this.chainOfThoughtService.contract.buyTokens({value: cost})
+    const cost = await (await this.chainOfThoughtService.getContract()).getTokenValue() * toBigInt(parsedAmount);
+    (await this.chainOfThoughtService.getContract()).buyTokens({value: cost})
       .then(() => {
         alert("Tokens purchased successfully!");
         this.router.navigate(["/home"]);
