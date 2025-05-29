@@ -1,0 +1,13 @@
+<div class="page">
+    <div class="nav" [ngClass]="{'hidden': !(showNav$ | async) }">
+        <div class="items">
+
+            <app-button content="navigate me" />
+        </div>
+        <span>===========</span>
+    </div>
+
+    <div class="content">
+        <ng-content></ng-content>
+    </div>
+</div>

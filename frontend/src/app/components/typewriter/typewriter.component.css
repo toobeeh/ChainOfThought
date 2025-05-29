@@ -1,0 +1,44 @@
+@keyframes cursor-fade {
+    0% {
+        opacity: .5;
+    }
+    45% {
+        opacity: 0;
+    }
+    55% {
+        opacity: 0;
+    }
+    100% {
+        opacity: .5;
+    }
+}
+
+
+.typewriter {
+    display: block;
+    position: relative;
+    margin-right: 2ex;
+}
+
+.typewriter .spacer {
+    position: relative;
+    left: 0;
+    user-select: none;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.typewriter .preview {
+    position: absolute;
+    left: 0;
+}
+
+.typewriter .preview .cursor {
+    position: absolute;
+    right: -1ex;
+    background: currentColor;
+    width: 1ex;
+    height: 1em;
+    animation: cursor-fade 1s infinite;
+}
+

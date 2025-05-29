@@ -1,0 +1,10 @@
+<div *ngIf="currentContent$ | async as content" class="typewriter">
+    <span class="preview" *ngIf="content.active">
+        {{content.word.substring(0, content.index)}}
+        <span class="cursor" *ngIf="cursorVisible$ | async"></span>
+    </span>
+    <span *ngIf="!content.active" class="preview"></span>
+    <span class="spacer">
+        {{content.word}}
+    </span>
+</div>

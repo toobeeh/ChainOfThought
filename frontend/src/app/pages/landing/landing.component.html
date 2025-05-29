@@ -1,0 +1,7 @@
+<div class="hero">
+    <h1>
+        <app-typewriter [characterDelay]="50" writerKey="hero" [cursorTimeout]="0" [initialDelay]="500" [content]="hero" />
+    </h1>
+    <app-typewriter [characterDelay]="50" waitForWriter="hero" [content]="caption" />
+    <app-button waitForWriter="hero" content="sign & enter" (click)="authenticate()" />
+</div>

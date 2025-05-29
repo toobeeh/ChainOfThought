@@ -1,0 +1,5 @@
+<div class="button" [ngClass]="{'hidden': !hasContent }">
+    <app-typewriter [characterDelay]="100" [waitForWriter]="waitForWriter" [content]="'> ' + content" (hasContent)="hasContent = $event" />
+    <div class="background-regular"></div>
+    <div class="background-effect"></div>
+</div>

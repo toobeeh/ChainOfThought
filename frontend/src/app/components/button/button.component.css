@@ -1,0 +1,48 @@
+@keyframes background-effect {
+    0% {
+        right: 100%;
+    }
+
+    100% {
+        right: 0;
+    }
+}
+
+.button {
+    border-radius: 4px;
+    padding: .5em;
+    font-size: medium;
+    cursor: pointer;
+    transition: opacity .2s, letter-spacing .2s;
+    margin: 1em;
+    position: relative;
+    overflow: hidden;
+}
+
+.button .background-regular {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background: #3f3f3f;
+}
+
+.button .background-effect {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+}
+
+.button:hover .background-effect {
+    background: #555555;
+    animation: background-effect 0.5s forwards;
+}
+
+/*.button:hover {
+    letter-spacing: 0.05em;
+}*/
+
+.button.hidden {
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+}
