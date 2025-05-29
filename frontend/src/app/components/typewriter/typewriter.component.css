@@ -17,7 +17,11 @@
 .typewriter {
     display: block;
     position: relative;
-    margin-right: 2ex;
+    white-space: pre;
+}
+
+.typewriter:not(.cursor-timeout) {
+    margin-right: 1ex;
 }
 
 .typewriter .spacer {

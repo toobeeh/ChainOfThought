@@ -1,16 +1,20 @@
 import {Component, Inject, inject, OnInit} from '@angular/core';
 import {ButtonComponent} from "../button/button.component";
-import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router, RouterLink} from "@angular/router";
 import {BehaviorSubject, filter, map, Observable, tap} from "rxjs";
-import {AsyncPipe, NgClass} from "@angular/common";
+import {AsyncPipe, NgClass, NgIf} from "@angular/common";
 import * as console from "console";
+import {LinkComponent} from "../link/link.component";
 
 @Component({
   selector: 'app-page',
   imports: [
     ButtonComponent,
     NgClass,
-    AsyncPipe
+    AsyncPipe,
+    LinkComponent,
+    NgIf,
+    RouterLink
   ],
   templateUrl: './page.component.html',
   standalone: true,

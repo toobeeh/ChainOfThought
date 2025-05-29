@@ -9,6 +9,7 @@ contract BasicDeploymentScript {
     function deployContracts() public {
         ThoughtToken thoughtToken = new ThoughtToken();
         ChainOfThought chainOfThought = new ChainOfThought(address (thoughtToken));
+        thoughtToken.allowSupervisorFor(address(chainOfThought));
     }
 }
 

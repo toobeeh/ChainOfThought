@@ -14,7 +14,7 @@ The server needs to verify that the calling user really has the rights to access
 The thought cloud is a server which stores the post content and metadata.  
 It exposes a REST API to the frontend.  
 
-### Authentication
+### Authenticationw
 Users need to authenticate with the REST API using a bearer token.  
 The bearer token consists of the Base64 of a signed nonce, proving the ownership of the user's address:
 ```json

@@ -1,0 +1,13 @@
+<div class="link" [ngClass]="{'hidden': !hasContent }">
+    <h3 class="deco">
+        <app-typewriter
+                [writerKey]="'@' + content"
+                [cursorTimeout]="0"
+                [characterDelay]="50"
+                [waitForWriter]="waitForWriter"
+                [content]="'> ' + content"
+                (hasContent)="hasContent = $event"
+        />
+    </h3>
+    <div class="background-effect"></div>
+</div>

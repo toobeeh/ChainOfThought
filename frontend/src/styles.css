@@ -4,3 +4,12 @@ body {
     font-family: "Courier New", Courier, monospace;
     margin: 0;
 }
+
+.deco {
+    font-family: 'A.D. MONO', sans-serif;
+    letter-spacing: .1em;
+}
+
+input[type="text"], input[type="number"] {
+    padding: .2em;
+}

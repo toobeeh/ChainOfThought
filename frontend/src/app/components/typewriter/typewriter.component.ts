@@ -20,14 +20,15 @@ import {
   take,
   tap
 } from "rxjs";
-import {AsyncPipe, NgIf} from "@angular/common";
+import {AsyncPipe, NgClass, NgIf} from "@angular/common";
 import {TypewriterService} from "../../service/typewriter.service";
 
 @Component({
   selector: 'app-typewriter',
   imports: [
     NgIf,
-    AsyncPipe
+    AsyncPipe,
+    NgClass
   ],
   templateUrl: './typewriter.component.html',
   standalone: true,

@@ -1,1 +1,29 @@
-<p>user-home works!</p>
+<div class="home" *ngIf="(author$ | async) as author">
+    <h1>
+        <app-typewriter
+            [characterDelay]="20"
+            [cursorTimeout]="1000"
+            writerKey="home-title" [content]="'welcome back ..'" />
+    </h1>
+
+    <div *appWhenWriterFinished="'home-intro'"  class="home-details">
+        <span>alias:</span><b>{{author.alias}}</b>
+        <span>balance:</span><b>{{author.balance}} thought tokens</b>
+        <span>address:</span><span>{{author.address}}</span>
+    </div>
+
+    <div *appWhenWriterFinished="'home-intro'" class="home-actions">
+
+        <app-typewriter
+                [characterDelay]="10"
+                [cursorTimeout]="0"
+                writerKey="home-intro"
+                [content]="'what\'s on your mind?'"
+        />
+        <app-button content="buy thought tokens" routerLink="/buy" />
+        <app-button content="change alias" routerLink="/alias" />
+        <app-button content="claim daily reward" routerLink="/alias" />
+    </div>
+</div>
+
+

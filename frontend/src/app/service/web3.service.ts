@@ -34,6 +34,13 @@ export class Web3Service {
     return this._state.signedToken;
   }
 
+  public getRequiredSigner(): JsonRpcSigner {
+    if (this._state === undefined) {
+      throw new Error("Web3Service not initialized");
+    }
+    return this._state.signer;
+  }
+
   public async authenticate() {
     await this.getState();
   }

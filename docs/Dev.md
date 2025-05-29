@@ -2,6 +2,9 @@ Development
 ===
 Dev setup & commands can be found here.
 
+## Docker
+For simplicity, all services can be started using the provided docker compose file in `./docker/docker-compose.yml`.
+
 ## Blockchain
 For development, foundry is used to run the blockchain. 
 Following commands are relevant:

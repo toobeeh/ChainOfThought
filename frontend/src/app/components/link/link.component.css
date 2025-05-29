@@ -3,15 +3,23 @@
         right: 100%;
     }
 
-    100% {
+    30% {
         right: 0;
+        left: 0;
+    }
+
+    60% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
     }
 }
 
-.button {
+.link {
     border-radius: 4px;
     padding: .5em;
-    font-size: medium;
     cursor: pointer;
     transition: opacity .2s, letter-spacing .2s;
     margin: 1em;
@@ -20,29 +28,23 @@
     user-select: none;
 }
 
-.button .background-regular {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    background: #3f3f3f;
+h3 {
+    margin: 0;
+    font-weight: normal;
 }
 
-.button .background-effect {
+.link .background-effect {
     position: absolute;
     inset: 0;
     z-index: -1;
 }
 
-.button:hover .background-effect {
-    background: #555555;
-    animation: background-effect 0.5s forwards;
+.link:hover .background-effect {
+    background: #3f3f3f;
+    animation: background-effect 1s infinite;
 }
 
-/*.button:hover {
-    letter-spacing: 0.05em;
-}*/
-
-.button.hidden {
+.link.hidden {
     opacity: 0;
     pointer-events: none;
     user-select: none;
