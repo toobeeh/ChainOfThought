@@ -8,7 +8,7 @@ import {AsyncPipe, NgIf} from "@angular/common";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {Router} from "@angular/router";
-import {toBytes20} from "../../../util/toBytes20";
+import {toBytesN} from "../../../util/toBytesN";
 
 @Component({
   selector: 'app-reward',

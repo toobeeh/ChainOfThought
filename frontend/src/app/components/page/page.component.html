@@ -3,8 +3,8 @@
         <div class="items">
 
             <app-link content="Home" routerLink="/home" />
-            <app-link content="Posts" waitForWriter="@Home" />
-            <app-link content="Write" waitForWriter="@Posts"  />
+            <app-link content="Read" waitForWriter="@Home" routerLink="/read" />
+            <app-link content="Write" waitForWriter="@Read" routerLink="/write"  />
         </div>
         <span>
             <span class="infonav" (click)="exit()">exit</span>

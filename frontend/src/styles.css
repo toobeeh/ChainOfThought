@@ -11,5 +11,6 @@ body {
 }
 
 input[type="text"], input[type="number"] {
-    padding: .2em;
+    padding: .3em;
 }
+

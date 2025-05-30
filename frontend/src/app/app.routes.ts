@@ -6,6 +6,7 @@ import {BuyComponent} from "./pages/buy/buy.component";
 import {AliasComponent} from "./pages/alias/alias.component";
 import {RewardComponent} from "./pages/reward/reward.component";
 import {AboutComponent} from "./pages/about/about.component";
+import {WriteComponent} from "./pages/write/write.component";
 
 export const routes: Routes = [
     {
@@ -35,6 +36,11 @@ export const routes: Routes = [
     {
         path: "about",
         component: AboutComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "write",
+        component: WriteComponent,
         canActivate: [authGuard]
     }
 ];

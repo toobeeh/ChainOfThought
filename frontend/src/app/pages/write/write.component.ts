@@ -11,7 +11,7 @@ import {Router} from "@angular/router";
 import {toBytesN} from "../../../util/toBytesN";
 
 @Component({
-  selector: 'app-alias',
+  selector: 'app-write',
   imports: [
     TypewriterComponent,
     AsyncPipe,
@@ -19,11 +19,11 @@ import {toBytesN} from "../../../util/toBytesN";
     NgIf,
     WhenWriterFinishedDirective
   ],
-  templateUrl: './alias.component.html',
+  templateUrl: './write.component.html',
   standalone: true,
-  styleUrl: './alias.component.css'
+  styleUrl: './write.component.css'
 })
-export class AliasComponent {
+export class WriteComponent {
 
   changeCost$: Observable<number>;
   author$: Observable<author>;
@@ -40,19 +40,30 @@ export class AliasComponent {
     );
   }
 
-  public async rename(newAlias: string) {
-    if(newAlias.length < 1 || newAlias.length > 20) {
-      alert("Alias must be between 1 and 20 characters.");
+  public async share(title: string, content: string) {
+    if(title.length < 1 || title.length > 50) {
+      alert("Title must be between 1 and 50 characters.");
+      return;
+    }
+
+    if(content.length < 1) {
+      alert("Content must not be empty.");
+      return;
+    }
+
+    const estimate = await (await this.chainOfThoughtService.getContract()).estimatePostCost(title, content, new Uint8Array(0), toBytesN("", 32));
+    const confirmed = confirm(`This post will cost ${estimate.toString()} thought tokens. Do you want to proceed?`);
+    if (!confirmed) {
       return;
     }
 
     const observable= fromPromise(this.chainOfThoughtService.getContract()).pipe(
-      switchMap(contract => contract.changeAlias(toBytesN(newAlias, 20))),
+      switchMap(contract => contract.publishPost(title, content, new Uint8Array(0), toBytesN("", 32))),
     );
 
     try {
       await firstValueFrom(observable);
-      alert("Alias changed successfully!");
+      alert("Thoughts shared successfully!");
       await this.router.navigate(["/home"]);
     }
     catch (e) {
