@@ -139,6 +139,11 @@ interface IChainOfThought is IChainOfThoughtEvents {
     */
     function userWrittenPosts() external view returns (bytes32[] memory ownPostHashes);
 
+    /**
+    * @dev Get all posts that the user created
+    */
+    function getAccessAllowedPostsOfUser(address author) external view returns (bytes32[] memory allowedPostHashes);
+
     // ======================
     // Viewing Posts
 

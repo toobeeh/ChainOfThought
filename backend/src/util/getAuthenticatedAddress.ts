@@ -12,8 +12,9 @@ interface AuthTokenPayload {
  * @returns The authenticated address if valid, otherwise undefined
  */
 export function getAuthenticatedAddress(request: Request): string | undefined {
-    const authHeader = request.headers.authorization;
-    const authRegex = /^Bearer\s+([a-zA-Z0-9]+)$/;
+    const authHeader = request.headers["authorization"];
+    console.log(authHeader);
+    const authRegex = /^Bearer\s+([a-zA-Z0-9=]+)$/;
 
     // Check if the authorization header is present and matches the expected format
     if (typeof authHeader === 'string') {
@@ -42,6 +43,5 @@ export function getAuthenticatedAddress(request: Request): string | undefined {
 function parseAndVerifyAuthToken(token: string): string {
     const json = Buffer.from(token, 'base64').toString('utf-8');
     const parsed: AuthTokenPayload = JSON.parse(json);
-
     return ethers.verifyMessage(parsed.message, parsed.signature);
 }

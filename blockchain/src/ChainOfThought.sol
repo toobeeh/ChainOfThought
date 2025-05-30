@@ -213,6 +213,21 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         return _userPosts[msg.sender];
     }
 
+    function getAccessAllowedPostsOfUser(address author) external view override returns (bytes32[] memory) {
+        bytes32[] memory accessedPosts = _postAccessList[author];
+        bytes32[] memory writtenPosts = _userPosts[author];
+        bytes32[] memory allPosts = new bytes32[](accessedPosts.length + writtenPosts.length);
+
+        uint index = 0;
+        for (uint i = 0; i < accessedPosts.length; i++) {
+            allPosts[index++] = accessedPosts[i];
+        }
+        for (uint i = 0; i < writtenPosts.length; i++) {
+            allPosts[index++] = writtenPosts[i];
+        }
+        return allPosts;
+    }
+
     // ======================
     // Viewing Posts
 

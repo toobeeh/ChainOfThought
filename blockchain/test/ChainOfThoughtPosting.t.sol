@@ -166,6 +166,22 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase {
         vm.stopPrank();
     }
 
+    function test_completeAccessList() public
+        withAuthorBalance(author1, 1000000)
+        withAuthorBalance(author2, 1000000)
+        withPostExisting(author2)
+        withPostExisting(author1)
+    {
+        vm.startPrank(author2, author2);
+        bytes32 postHash = chainOfThought.allPosts()[1];
+        chainOfThought.addPostToAccessList(postHash);
+
+        bytes32[] memory allowedPosts = chainOfThought.getAccessAllowedPostsOfUser(author2);
+        assertEq(allowedPosts.length, 2, "Access allowed posts should contain accessed and own post");
+
+        vm.stopPrank();
+    }
+
     function test_cantAddOwnToAccessList() public withAuthorBalance(author1, 1000000) withPostExisting(author1) {
         vm.startPrank(author1, author1);
 

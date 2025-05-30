@@ -1,5 +1,5 @@
 import {cotEnvironment} from "./environment.interface";
 
 export const environment: cotEnvironment = {
-    contractAddress: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
+    contractAddress: "0x0B306BF915C4d645ff596e518fAf3F9669b97016"
 };

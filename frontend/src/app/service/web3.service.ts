@@ -4,7 +4,7 @@ import {BrowserProvider, JsonRpcSigner} from "ethers";
 interface web3State {
   provider: BrowserProvider,
   signer: JsonRpcSigner,
-  signedToken: string
+  authToken: string
 }
 
 @Injectable({
@@ -16,13 +16,23 @@ export class Web3Service {
 
   constructor() { }
 
+  private generateToken(signed: string, message: string): string {
+    const tokenPayload = {
+      message: message,
+      signature: signed
+    };
+    return btoa(JSON.stringify(tokenPayload));
+  }
+
   private async signState(): Promise<web3State> {
     if (this._state === undefined) {
       const provider = new BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
-      const signedToken = await signer.signMessage("This message will be signed to authenticate you. (Nonce: " + Date.now() + ")");
-      this._state = {provider, signer, signedToken};
-      sessionStorage.setItem("web3auth", `${await signer.getAddress()}:${signedToken}`);
+      const message = "This message will be signed to authenticate you. (Nonce: " + Date.now() + ")";
+      const signedToken = await signer.signMessage(message);
+      const authToken = this.generateToken(signedToken, message);
+      this._state = {provider, signer, authToken};
+      sessionStorage.setItem("web3auth", `${await signer.getAddress()}:${authToken}`);
     }
     return this._state;
   }
@@ -34,7 +44,7 @@ export class Web3Service {
       try {
         const provider = new BrowserProvider((window as any).ethereum);
         const signer = await provider.getSigner(addr);
-        return {provider, signer, signedToken: token};
+        return {provider, signer, authToken: token};
       } catch (e) {
         return undefined;
       }
@@ -55,7 +65,7 @@ export class Web3Service {
       throw new Error("Web3Service not initialized");
     }
 
-    return state.signedToken;
+    return state.authToken;
   }
 
   public async getRequiredSigner(): Promise<JsonRpcSigner> {
