@@ -22,18 +22,19 @@ export class Web3Service {
       const signer = await provider.getSigner();
       const signedToken = await signer.signMessage("This message will be signed to authenticate you. (Nonce: " + Date.now() + ")");
       this._state = {provider, signer, signedToken};
-      sessionStorage.setItem("web3auth", signedToken);
+      sessionStorage.setItem("web3auth", `${await signer.getAddress()}:${signedToken}`);
     }
     return this._state;
   }
 
   private async readExistingState(): Promise<web3State | undefined> {
-    const existingToken = sessionStorage.getItem("web3auth");
-    if (existingToken && existingToken.length > 0) {
+    const existingAuth = sessionStorage.getItem("web3auth");
+    if (existingAuth && existingAuth.length > 0) {
+      const [addr, token] = existingAuth.split(":");
       try {
         const provider = new BrowserProvider((window as any).ethereum);
-        const signer = await provider.getSigner();
-        return {provider, signer, signedToken: existingToken};
+        const signer = await provider.getSigner(addr);
+        return {provider, signer, signedToken: token};
       } catch (e) {
         return undefined;
       }
@@ -72,5 +73,10 @@ export class Web3Service {
   public async isAuthenticated(): Promise<boolean> {
     const state = await this.getState();
     return state !== undefined;
+  }
+
+  public reset() {
+    this._state = undefined;
+    sessionStorage.removeItem("web3auth");
   }
 }

@@ -5,6 +5,7 @@ import {authGuard} from "./guards/auth.guard";
 import {BuyComponent} from "./pages/buy/buy.component";
 import {AliasComponent} from "./pages/alias/alias.component";
 import {RewardComponent} from "./pages/reward/reward.component";
+import {AboutComponent} from "./pages/about/about.component";
 
 export const routes: Routes = [
     {
@@ -29,6 +30,11 @@ export const routes: Routes = [
     {
         path: "reward",
         component: RewardComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "about",
+        component: AboutComponent,
         canActivate: [authGuard]
     }
 ];

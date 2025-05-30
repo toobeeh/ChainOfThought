@@ -31,3 +31,8 @@
     display: grid;
     place-content: center;
 }
+
+.infonav {
+    opacity: .5;
+    cursor: pointer;
+}

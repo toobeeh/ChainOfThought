@@ -6,7 +6,11 @@
             <app-link content="Posts" waitForWriter="@Home" />
             <app-link content="Write" waitForWriter="@Posts"  />
         </div>
-        <span>==  ~  ==  ~  ==  ~  ==  ~  ==  ~  ==</span>
+        <span>
+            <span class="infonav" (click)="exit()">exit</span>
+            ==  ~  ==  ~  ==  ~  ==  ~  ==  ~  ==
+            <span routerLink="/about" class="infonav">about</span>
+        </span>
     </div>
 
     <div class="content">

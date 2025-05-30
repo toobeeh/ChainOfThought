@@ -5,6 +5,7 @@ import {BehaviorSubject, filter, map, Observable, tap} from "rxjs";
 import {AsyncPipe, NgClass, NgIf} from "@angular/common";
 import * as console from "console";
 import {LinkComponent} from "../link/link.component";
+import {Web3Service} from "../../service/web3.service";
 
 @Component({
   selector: 'app-page',
@@ -24,7 +25,10 @@ export class PageComponent implements OnInit {
 
   protected showNav$?: Observable<boolean>;
 
-  constructor(@Inject(Router) private router: Router) {
+  constructor(
+      @Inject(Router) private router: Router,
+      @Inject(Web3Service) private web3Service: Web3Service,
+  ) {
   }
 
   ngOnInit(): void {
@@ -34,6 +38,11 @@ export class PageComponent implements OnInit {
           return event.url !== "/";
         }),
     );
+  }
+
+  exit(){
+    this.web3Service.reset();
+    this.router.navigate(['/']);
   }
 
 }

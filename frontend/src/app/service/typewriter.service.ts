@@ -11,7 +11,6 @@ export class TypewriterService {
   constructor() { }
 
   public writerHasFinished(key: string) {
-    console.log(`Writer with key "${key}" has finished.`);
     this._finishedWriters$.next(key);
   }
 
