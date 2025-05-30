@@ -1,9 +1,9 @@
 import {Injectable, Scope} from '@nestjs/common';
 import {ChainOfThought, ChainOfThought__factory} from "../../types/ethers-contracts";
-import {ethers, JsonRpcProvider} from "ethers";
+import {JsonRpcProvider} from "ethers";
 
 const contractAddress = process.env.CONTRACT || '0x0B306BF915C4d645ff596e518fAf3F9669b97016';
-const networkAddress = process.env.NETWORK || 'localhost:8545';
+const networkAddress = process.env.NETWORK || 'http://localhost:8545';
 
 @Injectable({scope: Scope.REQUEST})
 export class ChainOfThoughtService {

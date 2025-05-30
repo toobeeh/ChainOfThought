@@ -7,6 +7,8 @@ import {PostsService} from "./service/post.service";
 import {AuthService} from "./service/auth.service";
 import {APP_GUARD} from "@nestjs/core";
 import {AuthGuard} from "./guard/auth.guard";
+import {PostAccessService} from "./service/post-access.service";
+import {ChainOfThoughtService} from "./service/chain-of-thought.service";
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import {AuthGuard} from "./guard/auth.guard";
       AppService,
       PostsService,
       AuthService,
+      ChainOfThoughtService,
+      PostAccessService,
       {
           provide: APP_GUARD,
           useClass: AuthGuard,

@@ -4,19 +4,19 @@ import {getAuthenticatedAddress} from "../util/getAuthenticatedAddress";
 @Injectable({scope: Scope.REQUEST})
 export class AuthService {
 
-    private authenticatedAddress: string | undefined;
+    private _authenticatedAddress: string | undefined;
 
     public attachIdentity(request: any): boolean {
         const address = getAuthenticatedAddress(request);
-        this.authenticatedAddress = address;
+        this._authenticatedAddress = address;
         return address !== undefined;
     }
 
     public get authenticatedAddress(): string {
-        if (this.authenticatedAddress === undefined) {
+        if (this._authenticatedAddress === undefined) {
             throw new ForbiddenException("No authenticated address recognized.");
         }
-        return this.authenticatedAddress;
+        return this._authenticatedAddress;
     }
 
 }
