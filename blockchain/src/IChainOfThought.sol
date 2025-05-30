@@ -5,7 +5,7 @@ interface IChainOfThoughtEvents {
     // ======================
     // Contract Events
 
-    event PostPublished(bytes32 indexed postHash, address indexed author);
+    event PostPublished(bytes32 indexed postHash, address indexed author, uint timestamp);
     event PostAccessed(bytes32 indexed postHash, address indexed reader);
     event AliasChanged(address indexed user, bytes20 newAlias);
     event UserBalanceChanged(address indexed user, uint newBalance);
@@ -109,7 +109,14 @@ interface IChainOfThought is IChainOfThoughtEvents {
     /**
     * @dev Get the hash of a post based on its content
     */
-    function getPostHash(string calldata title, string calldata content, bytes calldata icon, bytes32 psPostHash) external view returns (bytes32 postHash);
+    function getPostHash(
+        string calldata title,
+        string calldata content,
+        bytes calldata icon,
+        bytes32 psPostHash,
+        address author,
+        uint timestamp
+    ) external view returns (bytes32 postHash);
 
     // ======================
     // Listing Access

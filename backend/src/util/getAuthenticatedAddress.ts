@@ -13,7 +13,6 @@ interface AuthTokenPayload {
  */
 export function getAuthenticatedAddress(request: Request): string | undefined {
     const authHeader = request.headers["authorization"];
-    console.log(authHeader);
     const authRegex = /^Bearer\s+([a-zA-Z0-9=]+)$/;
 
     // Check if the authorization header is present and matches the expected format

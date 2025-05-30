@@ -131,9 +131,11 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         string calldata title,
         string calldata content,
         bytes calldata icon,
-        bytes32 psPostHash
+        bytes32 psPostHash,
+        address author,
+        uint timestamp
     ) public pure override returns (bytes32) {
-        return keccak256(abi.encodePacked(title, content, icon, psPostHash));
+        return keccak256(abi.encodePacked(title, content, icon, psPostHash, author, timestamp));
     }
 
     function publishPost(
@@ -153,7 +155,8 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         require(_thoughtTokenContract.burn(postCost, msg.sender), "Token burn failed");
 
         // Create post hash
-        bytes32 postHash = keccak256(abi.encodePacked(title, content, icon, psPostHash));
+        bytes32 postHash = getPostHash(title, content, icon, psPostHash, msg.sender, block.timestamp);
+        require(_postStats[postHash].author == address(0), "Post already exists");
 
         // add as ps
         if(_postStats[psPostHash].author != address(0)) {
@@ -183,7 +186,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _userPosts[msg.sender].push(postHash);
 
         // Emit event
-        emit PostPublished(postHash, msg.sender);
+        emit PostPublished(postHash, msg.sender, block.timestamp);
 
         return postHash;
     }

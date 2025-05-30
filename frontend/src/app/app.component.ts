@@ -12,4 +12,5 @@ import {PageComponent} from "./components/page/page.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+
 }

@@ -1,12 +1,9 @@
-import { Module } from '@nestjs/common';
+import {Module} from '@nestjs/common';
 import { PostsController } from './posts.controller';
-import { AppService } from './app.service';
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {PostEntity} from "./entities/post.entity";
-import {PostsService} from "./service/post.service";
+import {PostContentService} from "./service/post-content.service";
 import {AuthService} from "./service/auth.service";
-import {APP_GUARD} from "@nestjs/core";
-import {AuthGuard} from "./guard/auth.guard";
 import {PostAccessService} from "./service/post-access.service";
 import {ChainOfThoughtService} from "./service/chain-of-thought.service";
 
@@ -22,15 +19,11 @@ import {ChainOfThoughtService} from "./service/chain-of-thought.service";
   ],
   controllers: [PostsController],
   providers: [
-      AppService,
-      PostsService,
+      PostContentService,
       AuthService,
       ChainOfThoughtService,
-      PostAccessService,
-      {
-          provide: APP_GUARD,
-          useClass: AuthGuard,
-      }
+      PostAccessService
   ],
 })
 export class AppModule {}
+

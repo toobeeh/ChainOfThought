@@ -1,6 +1,6 @@
 import {ApiProperty} from "@nestjs/swagger";
 
-export class PostPreview {
+export class PostPreviewDto {
 
     @ApiProperty()
     hash: string;

@@ -1,30 +1,52 @@
-import {Body, Controller, ForbiddenException, Get, NotFoundException, Param, Post, UseGuards} from '@nestjs/common';
-import { AppService } from './app.service';
-import {PostsService} from "./service/post.service";
-import {PostEntity} from "./entities/post.entity";
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Get,
+  NotFoundException,
+  Param,
+  Post,
+  PreconditionFailedException,
+  UseGuards
+} from '@nestjs/common';
+import {PostContentService} from "./service/post-content.service";
 import {FindPostsDto} from "./dto/findPosts.dto";
-import {PostPreview} from "./dto/postPreview.dto";
+import {PostPreviewDto} from "./dto/postPreview.dto";
 import {AuthGuard} from "./guard/auth.guard";
-import {ApiBearerAuth} from "@nestjs/swagger";
 import {PostAccessService} from "./service/post-access.service";
+import {PostDto} from "./dto/post.dto";
+import {ApiBearerAuth} from "@nestjs/swagger";
 
 @Controller("posts")
 @ApiBearerAuth()
 export class PostsController {
   constructor(
-      private readonly appService: AppService,
-      private readonly postService: PostsService,
+      private readonly postService: PostContentService,
       private readonly postAccessService: PostAccessService
   ) {}
 
   @Post()
-  async createPost(@Body() post: PostEntity): Promise<PostEntity> {
-      return this.postService.create(post);
+  @UseGuards(AuthGuard)
+  async uploadPostContent(@Body() post: PostDto): Promise<PostDto> {
+
+    if(!this.postAccessService.allowedToUpload(post)){
+      throw new ForbiddenException(`Authenticated author is not allowed to upload provided post`)
+    }
+
+    const hash = await this.postAccessService.getIntegrousPostHash(post);
+    const existing = await this.postService.findByHash(hash);
+
+    if(existing !== null) {
+      throw new PreconditionFailedException(`Post contents with hash ${hash} already exists`);
+    }
+
+    await this.postService.create(post);
+    return post;
   }
 
   @Get(":hash")
   @UseGuards(AuthGuard)
-  async getPostByHash(@Param("hash") hash: string): Promise<PostEntity> {
+  async getPostByHash(@Param("hash") hash: string): Promise<PostDto> {
 
     if(! await this.postAccessService.hasAccessTo([hash])) {
       throw new ForbiddenException(`The post is not present in the access list.`);
@@ -39,7 +61,7 @@ export class PostsController {
 
   @Post("find")
   @UseGuards(AuthGuard)
-  async findPosts(@Body() search: FindPostsDto): Promise<PostEntity[]> {
+  async findPosts(@Body() search: FindPostsDto): Promise<PostDto[]> {
 
     if(! await this.postAccessService.hasAccessTo(search.hashes)) {
       throw new ForbiddenException(`At least one of the requested posts is not present in the access list.`);
@@ -49,7 +71,7 @@ export class PostsController {
   }
 
   @Post("findPreviews")
-  async findPostPreviews(@Body() search: FindPostsDto): Promise<PostPreview[]> {
+  async findPostPreviews(@Body() search: FindPostsDto): Promise<PostPreviewDto[]> {
     return this.postService.findAllHashesPreview(search.hashes);
   }
 }

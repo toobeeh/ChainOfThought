@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
 import {author, AuthorService} from "../../service/author.service";
-import {firstValueFrom, map, Observable, switchMap} from "rxjs";
+import {BehaviorSubject, filter, firstValueFrom, map, Observable, switchMap, tap} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {AsyncPipe, NgIf} from "@angular/common";
@@ -9,6 +9,8 @@ import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {Router} from "@angular/router";
 import {toBytesN} from "../../../util/toBytesN";
+import {Web3Service} from "../../service/web3.service";
+import {PostsService} from "../../service/posts.service";
 
 @Component({
   selector: 'app-write',
@@ -28,8 +30,10 @@ export class WriteComponent {
   changeCost$: Observable<number>;
   author$: Observable<author>;
 
+
   constructor(
       @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
+      @Inject(PostsService) private postsService: PostsService,
       @Inject(AuthorService) private authorService: AuthorService,
       @Inject(Router) private router: Router
   ) {
@@ -57,12 +61,24 @@ export class WriteComponent {
       return;
     }
 
-    const observable= fromPromise(this.chainOfThoughtService.getContract()).pipe(
-      switchMap(contract => contract.publishPost(title, content, new Uint8Array(0), toBytesN("", 32))),
+    const posts = await this.postsService.recordPublishedPosts();
+
+    const observable= fromPromise(
+        this.chainOfThoughtService.getContract()
+    ).pipe(
+        switchMap(contract => contract.publishPost(title, content, new Uint8Array(0), toBytesN("", 32))),
     );
 
     try {
-      await firstValueFrom(observable);
+      const result = await firstValueFrom(observable);
+
+      const resultPost = await firstValueFrom(posts.pipe(
+          map(posts => posts.find(post => post.transactionHash === result.hash)),
+          filter(post => post !== undefined),
+      ));
+
+      console.log(resultPost);
+
       alert("Thoughts shared successfully!");
       await this.router.navigate(["/home"]);
     }
