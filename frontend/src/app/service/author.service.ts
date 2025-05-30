@@ -18,6 +18,7 @@ export interface author {
     alias: string;
     balance: number;
     address: string;
+    rewardAvailable: boolean;
 }
 
 @Injectable({
@@ -40,15 +41,17 @@ export class AuthorService {
         const observable = combineLatest([
             contract.getAlias(),
             fromPromise(this.web3Service.getRequiredSigner()).pipe(switchMap(signer => signer.getAddress())),
-            contract.getTokenBalance()
+            contract.getTokenBalance(),
+            contract.rewardAvailable()
         ]).pipe(
 
             /* map to author when all emitted */
-            map(([alias, address, balance]) => {
+            map(([alias, address, balance, rewardAvailable]) => {
                 const author: author = {
                     alias,
                     balance: parseFloat(balance.toString()),
-                    address
+                    address,
+                    rewardAvailable
                 };
                 return author;
             }),

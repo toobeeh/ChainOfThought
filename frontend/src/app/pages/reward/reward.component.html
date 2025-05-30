@@ -1,0 +1,30 @@
+<h1>
+    <app-typewriter
+            [characterDelay]="20"
+            [cursorTimeout]="1000"
+            writerKey="reward-title" content="claim token reward"
+    />
+</h1>
+
+<p>
+    <app-typewriter
+            [characterDelay]="5"
+            [cursorTimeout]="0"
+            writerKey="reward-intro"
+            [content]="'every ' + formatSeconds((rewardTime$ | async) ?? 0) + ', you can claim ' + (rewardAmount$ | async) + ' thought tokens for free.'"
+    />
+</p>
+
+<br>
+
+<div *appWhenWriterFinished="'reward-intro'" class="reward-form">
+    <app-button
+            *ngIf="(author$ | async)?.rewardAvailable; else unavailable"
+            content="claim reward" style="width:auto"
+            (click)="getReward()"
+    />
+    <ng-template #unavailable>
+        <span>(sorry: ) the reward is not yet available to claim.</span>
+        <span>check back later!</span>
+    </ng-template>
+</div>

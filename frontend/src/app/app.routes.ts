@@ -4,6 +4,7 @@ import {UserHomeComponent} from "./pages/user-home/user-home.component";
 import {authGuard} from "./guards/auth.guard";
 import {BuyComponent} from "./pages/buy/buy.component";
 import {AliasComponent} from "./pages/alias/alias.component";
+import {RewardComponent} from "./pages/reward/reward.component";
 
 export const routes: Routes = [
     {
@@ -23,6 +24,11 @@ export const routes: Routes = [
     {
         path: "alias",
         component: AliasComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "reward",
+        component: RewardComponent,
         canActivate: [authGuard]
     }
 ];
