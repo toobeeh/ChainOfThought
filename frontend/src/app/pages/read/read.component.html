@@ -1,0 +1,68 @@
+<div class="read" *ngIf="author$ | async as author">
+    <h1>
+        <app-typewriter
+                [characterDelay]="20"
+                [cursorTimeout]="1000"
+                writerKey="read-title" content="explore thoughts"
+        />
+    </h1>
+
+    <p>
+        <app-typewriter
+                [characterDelay]="5"
+                [cursorTimeout]="0"
+                writerKey="read-intro"
+                [content]="'find thoughts published on the blockchain. reading a thought costs ' + (author$ | async)?.accessPrice + ' thought tokens once!'"
+        />
+    </p>
+
+    <br><br>
+
+    <div class="filters">
+        <b>
+            <app-typewriter
+                    waitForWriter="read-intro"
+                    writerKey="read-filters"
+                    [characterDelay]="20"
+                    [cursorTimeout]="100"
+                    content="filter thoughts:"
+            />
+        </b>
+        <span
+                *ngFor="let filterType of filters"
+                (click)="filter$.next(filterType.filter)"
+                [ngClass]="{'active': filterType.filter === filter$.value}"
+        >
+        <app-typewriter
+                waitForWriter="read-filters"
+                [characterDelay]="20"
+                [cursorTimeout]="100"
+                [content]="filterType.name"
+        />
+    </span>
+    </div>
+
+    <br><br>
+
+    <div *appWhenWriterFinished="'read-filters'">
+        <div class="previews" *ngIf="previews$ | async as previews">
+
+            <div class="preview" *ngFor="let preview of previews.posts">
+                <span class="date"> > {{ (preview.timestamp * 1000) | date:"short" }}:</span>
+                <b class="title">„{{ preview.title }}”</b>
+                <span class="author"> by {{ previews.aliases.get(preview.authorAddress) }}</span>
+                <span class="read">
+                    <app-button
+                            [content]="author.accessList.includes(preview.hash) ? 'read' : 'unlock'"
+                            (click)="goToPost(preview.hash, !author.accessList.includes(preview.hash))"
+                    />
+                </span>
+            </div>
+
+            <div *ngIf="previews.posts.length === 0">
+                <span>No thoughts found.</span>
+            </div>
+
+        </div>
+    </div>
+</div>

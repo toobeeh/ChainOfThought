@@ -1,0 +1,44 @@
+:host {
+    display:contents;
+}
+
+.read {
+    flex-grow: 1; /* uncomment to always align at top */
+}
+
+.filters {
+    display: flex;
+    flex-direction: row;
+    gap: 1em;
+}
+
+.filters > span {
+    opacity: .5;
+    cursor: pointer;
+    user-select: none;
+}
+
+.filters > span.active {
+    opacity: 1;
+}
+
+.previews {
+    display: grid;
+    flex-direction: column;
+    row-gap: 2em;
+    column-gap: 1em;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+}
+
+.preview {
+    display: contents;
+}
+
+.preview .date, .preview .author {
+    opacity: .5;
+}
+
+.preview .read {
+    padding-left: 1em;
+}

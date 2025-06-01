@@ -1,0 +1,33 @@
+<h1>
+    <app-typewriter
+            [characterDelay]="20"
+            [cursorTimeout]="1000"
+            writerKey="about-title" content="about chain of thought"
+    />
+</h1>
+
+<p>
+    <app-typewriter
+            [characterDelay]="5"
+            [cursorTimeout]="0"
+            waitForWriter="about-title"
+            writerKey="about-intro1"
+            [content]="'chain of thought is a decentralized app, created for a course at the tu vienna,\ninspired by a newborn urge to arrange words in a pleasing way.'"
+    />
+    <br>
+    <app-typewriter
+            [characterDelay]="5"
+            [cursorTimeout]="0"
+            waitForWriter="about-intro1"
+            writerKey="about-intro2"
+            [content]="'- also, my (meanwhile rusty) passion for web designs played a part in the effort to craft fancy ui - hope you like it!\n'+
+            '(i always wanted to tinker around with a typewriter effect, so this project was quite the perfect match)\n' +
+             '((also, btw, there is no ai involved in the creative aspect - devs should not give up on this!))'"
+    />
+    <br><br>
+    <app-typewriter
+            [characterDelay]="100"
+            waitForWriter="about-intro2"
+            [content]="'<3 github.com/toobeeh'"
+    />
+</p>

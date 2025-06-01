@@ -10,6 +10,13 @@ export interface recordedPublishedPost{
     timestamp: number;
 }
 
+export enum PostFilterType {
+    All,
+    Favorite,
+    Own,
+    Read
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -89,5 +96,33 @@ export class PostsService {
         const contract = await this.chainOfThoughtService.getContract();
         const estimate = await contract.estimatePostCost(title, content, iconBytes, toBytesN(psHash, 32));
         return Number(estimate);
+    }
+
+    public async getPublishedPostHashes(filter: PostFilterType): Promise<string[]> {
+        const contract = await this.chainOfThoughtService.getContract();
+
+        if(filter === PostFilterType.All){
+            return await contract.allPosts();
+        }
+
+        else if(filter === PostFilterType.Favorite){
+            return await contract.userFavoritePosts();
+        }
+
+        else if (filter === PostFilterType.Read){
+            return await contract.userAccessedPosts();
+        }
+
+        else return await contract.userWrittenPosts();
+    }
+
+    public async getAuthorAlias(address: string): Promise<string> {
+        const contract = await this.chainOfThoughtService.getContract();
+        return await contract.getAliasOf(address);
+    }
+
+    public async unlockPost(postHash: string): Promise<void> {
+        const contract = await this.chainOfThoughtService.getContract();
+        await contract.addPostToAccessList(postHash);
     }
 }

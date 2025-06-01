@@ -28,6 +28,10 @@ export class ChainOfThoughtService {
     return this._contract;
   }
 
+  public reset() {
+    this._contract = undefined;
+  }
+
   public async getEvents<T extends TypedContractEvent>(contract: ChainOfThought, event: T, listener: TypedListener<T>){
     await contract.on(event, listener);
     return () => {

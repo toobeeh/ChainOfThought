@@ -28,8 +28,9 @@
 
 .content {
     flex-grow: 1;
-    display: grid;
-    place-content: center;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .infonav {

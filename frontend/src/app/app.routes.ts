@@ -7,6 +7,8 @@ import {AliasComponent} from "./pages/alias/alias.component";
 import {RewardComponent} from "./pages/reward/reward.component";
 import {AboutComponent} from "./pages/about/about.component";
 import {WriteComponent} from "./pages/write/write.component";
+import {ReadComponent} from "./pages/read/read.component";
+import {PostComponent} from "./pages/post/post.component";
 
 export const routes: Routes = [
     {
@@ -41,6 +43,16 @@ export const routes: Routes = [
     {
         path: "write",
         component: WriteComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "read",
+        component: ReadComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: "read/:postHash",
+        component: PostComponent,
         canActivate: [authGuard]
     }
 ];

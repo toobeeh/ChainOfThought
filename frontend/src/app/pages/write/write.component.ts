@@ -27,7 +27,6 @@ export class WriteComponent {
   changeCost$: Observable<number>;
   author$: Observable<author>;
 
-
   constructor(
       @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
       @Inject(PostsService) private postsService: PostsService,
@@ -44,7 +43,7 @@ export class WriteComponent {
 
   public async share(title: string, content: string) {
     if(title.length < 1 || title.length > 50) {
-      alert("Title must be between 1 and 50 characters.");
+      alert("Title must be between 1 and 50 characters."); // TODO: test post constraints in blockchain tests
       return;
     }
 
@@ -61,7 +60,6 @@ export class WriteComponent {
 
     try {
       const post = await this.postsService.publishPost(title, content, new Uint8Array(0), toBytesN("", 32));
-      console.log(post);
 
       /* upload post content with received hash and metadata (to perform hash checks in backend) */
       await firstValueFrom(this.postsContentService.uploadPostContent({

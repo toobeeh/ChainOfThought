@@ -6,7 +6,7 @@ import {
     filter,
     firstValueFrom,
     map,
-    Observable,
+    Observable, of,
     switchMap,
     tap
 } from "rxjs";
@@ -25,6 +25,8 @@ export interface author {
     rewardAmount: number;
     renamePrice: number;
     tokenPrice: bigint;
+    accessPrice: number;
+    accessList: string[];
 }
 
 @Injectable({
@@ -42,21 +44,24 @@ export class AuthorService {
     public async loadAuthor() {
 
         const contract = await this.chainOfThoughtService.getContract();
+        const address = await (await this.web3Service.getRequiredSigner()).getAddress();
 
         /* collect author data */
         const observable = combineLatest([
             contract.getAlias(),
-            fromPromise(this.web3Service.getRequiredSigner()).pipe(switchMap(signer => signer.getAddress())),
+            of(address),
             contract.getTokenBalance(),
             contract.rewardAvailable(),
             contract.getRewardInterval(),
             contract.getRewardAmount(),
             contract.getRenamePrice(),
-            contract.getTokenValue()
+            contract.getTokenValue(),
+            contract.getAccessPrice(),
+            contract.getAccessAllowedPostsOfUser(address)
         ]).pipe(
 
             /* map to author when all emitted */
-            map(([alias, address, balance, rewardAvailable, rewardTime, rewardAmount, renamePrice, tokenPrice]) => {
+            map(([alias, address, balance, rewardAvailable, rewardTime, rewardAmount, renamePrice, tokenPrice, accessPrice, accessList]) => {
                 const author: author = {
                     alias,
                     balance: parseFloat(balance.toString()),
@@ -65,7 +70,9 @@ export class AuthorService {
                     rewardTime: Number(rewardTime),
                     rewardAmount: Number(rewardAmount),
                     renamePrice: Number(renamePrice),
-                    tokenPrice
+                    tokenPrice,
+                    accessPrice: Number(accessPrice),
+                    accessList
                 };
                 return author;
             }),

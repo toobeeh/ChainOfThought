@@ -4,6 +4,7 @@ import {filter, map, Observable} from "rxjs";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {LinkComponent} from "../link/link.component";
 import {Web3Service} from "../../service/web3.service";
+import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
 
 @Component({
   selector: 'app-page',
@@ -24,6 +25,7 @@ export class PageComponent implements OnInit {
   constructor(
       @Inject(Router) private router: Router,
       @Inject(Web3Service) private web3Service: Web3Service,
+      @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService
   ) {
   }
 
@@ -38,6 +40,7 @@ export class PageComponent implements OnInit {
 
   exit(){
     this.web3Service.reset();
+    this.chainOfThoughtService.reset();
     this.router.navigate(['/']);
   }
 

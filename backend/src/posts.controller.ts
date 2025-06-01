@@ -15,7 +15,7 @@ import {PostPreviewDto} from "./dto/postPreview.dto";
 import {AuthGuard} from "./guard/auth.guard";
 import {PostAccessService} from "./service/post-access.service";
 import {PostDto} from "./dto/post.dto";
-import {ApiBearerAuth} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiResponse} from "@nestjs/swagger";
 
 @Controller("posts")
 @ApiBearerAuth()
@@ -71,6 +71,7 @@ export class PostsController {
   }
 
   @Post("findPreviews")
+  @ApiResponse({type: [PostPreviewDto]})
   async findPostPreviews(@Body() search: FindPostsDto): Promise<PostPreviewDto[]> {
     return this.postService.findAllHashesPreview(search.hashes);
   }

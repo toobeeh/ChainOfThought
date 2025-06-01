@@ -14,7 +14,7 @@
     font-size: medium;
     cursor: pointer;
     transition: opacity .2s, letter-spacing .2s;
-    margin: 1em;
+    /*margin: 1em;*/
     position: relative;
     overflow: hidden;
     user-select: none;
