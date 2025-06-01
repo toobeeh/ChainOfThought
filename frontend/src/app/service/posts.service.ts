@@ -125,4 +125,9 @@ export class PostsService {
         const contract = await this.chainOfThoughtService.getContract();
         await contract.addPostToAccessList(postHash);
     }
+
+    public async addPostToFavorites(postHash: string): Promise<void> {
+        const contract = await this.chainOfThoughtService.getContract();
+        await contract.addPostToFavorites(postHash);
+    }
 }

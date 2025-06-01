@@ -1,0 +1,22 @@
+.date, .author {
+    opacity: 0.5;
+}
+
+.content {
+    white-space: pre;
+    font-size: 1.2em;
+}
+
+.favorite {
+    opacity: .5;
+    cursor: pointer;
+    user-select: none;
+}
+
+.favorite:hover {
+    opacity: 1;
+}
+
+.not-favorizable {
+    opacity: .5;
+}

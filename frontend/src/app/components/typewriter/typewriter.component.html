@@ -1,5 +1,5 @@
 <div *ngIf="currentContent$ | async as content" class="typewriter" [ngClass]="{'cursor-timeout': cursorTimeout !== undefined}">
-    <span class="preview" *ngIf="content.active">{{content.word.substring(0, content.index)}}<span class="cursor" *ngIf="cursorVisible$ | async"></span>
+    <span class="preview" *ngIf="content.active"><span>{{content.word.substring(0, content.index)}}</span><span class="cursor" *ngIf="cursorVisible$ | async"></span>
     </span>
     <span *ngIf="!content.active" class="preview"></span>
     <span class="spacer"> {{content.word}}</span>

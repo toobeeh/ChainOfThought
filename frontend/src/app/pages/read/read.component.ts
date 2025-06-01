@@ -42,16 +42,18 @@ export class ReadComponent {
       switchMap(filter => this.postsService.getPublishedPostHashes(filter)),
       switchMap(hashes => this.getPostPreviews(hashes)),
       switchMap(previews => {
+
+          if(previews.length === 0) {
+              return of({ posts: [], aliases: new Map<string, string>()});
+          }
+
           const authors = previews
               .map(preview => preview.authorAddress)
               .filter((value, index, self) => self.indexOf(value) === index);
-          const aliases = Promise.all(authors.map(address => this.getAuthorAlias(address)));
 
-          const authorAliases = forkJoin(
+          return forkJoin(
               authors.map(address => fromPromise(this.getAuthorAlias(address)).pipe(map(alias => ({alias, address}))))
-          );
-
-          return authorAliases.pipe(
+          ).pipe(
               map(aliases => {
                   const ali = new Map<string, string>();
                   aliases.forEach(a => ali.set(a.address, a.alias));

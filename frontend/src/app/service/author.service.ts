@@ -27,6 +27,7 @@ export interface author {
     tokenPrice: bigint;
     accessPrice: number;
     accessList: string[];
+    favorites: string[];
 }
 
 @Injectable({
@@ -57,11 +58,12 @@ export class AuthorService {
             contract.getRenamePrice(),
             contract.getTokenValue(),
             contract.getAccessPrice(),
-            contract.getAccessAllowedPostsOfUser(address)
+            contract.getAccessAllowedPostsOfUser(address),
+            contract.userFavoritePosts()
         ]).pipe(
 
             /* map to author when all emitted */
-            map(([alias, address, balance, rewardAvailable, rewardTime, rewardAmount, renamePrice, tokenPrice, accessPrice, accessList]) => {
+            map(([alias, address, balance, rewardAvailable, rewardTime, rewardAmount, renamePrice, tokenPrice, accessPrice, accessList, favorites]) => {
                 const author: author = {
                     alias,
                     balance: parseFloat(balance.toString()),
@@ -72,7 +74,8 @@ export class AuthorService {
                     renamePrice: Number(renamePrice),
                     tokenPrice,
                     accessPrice: Number(accessPrice),
-                    accessList
+                    accessList,
+                    favorites
                 };
                 return author;
             }),

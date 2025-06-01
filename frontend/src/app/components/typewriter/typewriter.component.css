@@ -35,11 +35,11 @@
 .typewriter .preview {
     position: absolute;
     left: 0;
+    display: flex;
+    align-items: center;
 }
 
 .typewriter .preview .cursor {
-    position: absolute;
-    right: -1ex;
     background: currentColor;
     width: 1ex;
     height: 1em;
