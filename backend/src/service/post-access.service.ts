@@ -3,6 +3,7 @@ import {AuthService} from "./auth.service";
 import {ChainOfThoughtService} from "./chain-of-thought.service";
 import {PostDto} from "../dto/post.dto";
 import {toBytesN} from "../util/toBytesN";
+import {ChainOfThought} from "../../types/ethers-contracts";
 
 @Injectable({scope: Scope.REQUEST})
 export class PostAccessService {
@@ -32,7 +33,13 @@ export class PostAccessService {
         const expectedHash = await contract.getPostHash(post.title, post.content,  new Uint8Array(0), toBytesN("", 32), post.authorAddress, post.timestamp);
 
         // check if post exists on-chain
-        const postStats = await contract.getPostStats(expectedHash);
+        let postStats: Awaited<ReturnType<ChainOfThought["getPostStats"]>>;
+        try {
+            postStats = await contract.getPostStats(expectedHash);
+        }
+        catch (e) {
+            throw new PreconditionFailedException(`Post with expected hash ${expectedHash} does not exist on-chain`);
+        }
 
         // check if authors match
         if(postStats.author !== post.authorAddress){

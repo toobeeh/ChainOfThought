@@ -24,6 +24,15 @@ export class Web3Service {
     return btoa(JSON.stringify(tokenPayload));
   }
 
+  public static getCurrentToken(): string | undefined {
+    const existingAuth = sessionStorage.getItem("web3auth");
+    if (existingAuth && existingAuth.length > 0) {
+      const [, token] = existingAuth.split(":");
+      return token;
+    }
+    return undefined;
+  }
+
   private async signState(): Promise<web3State> {
     if (this._state === undefined) {
       const provider = new BrowserProvider((window as any).ethereum);

@@ -1,6 +1,4 @@
 import {Inject, Injectable} from "@angular/core";
-import {ChainOfThought, ChainOfThought__factory} from "../../../types/ethers-contracts";
-import {PostPublishedEvent} from "../../../types/ethers-contracts/ChainOfThought";
 import {ChainOfThoughtService} from "./chain-of-thought.service";
 import {BehaviorSubject, filter, firstValueFrom, map, Observable, of, Subject, timeout} from "rxjs";
 import {toBytesN} from "../../util/toBytesN";

@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
 import {author, AuthorService} from "../../service/author.service";
-import {map, Observable, switchMap} from "rxjs";
+import {firstValueFrom, map, Observable, switchMap} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {ButtonComponent} from "../../components/button/button.component";
@@ -9,6 +9,7 @@ import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished
 import {Router} from "@angular/router";
 import {toBytesN} from "../../../util/toBytesN";
 import {PostsService} from "../../service/posts.service";
+import {PostsService as PostsContentService} from "../../../../api"
 
 @Component({
   selector: 'app-write',
@@ -31,7 +32,8 @@ export class WriteComponent {
       @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
       @Inject(PostsService) private postsService: PostsService,
       @Inject(AuthorService) private authorService: AuthorService,
-      @Inject(Router) private router: Router
+      @Inject(Router) private router: Router,
+      @Inject(PostsContentService) private postsContentService: PostsContentService
   ) {
     this.author$ = this.authorService.author$;
     this.changeCost$ = fromPromise(this.chainOfThoughtService.getContract()).pipe(
@@ -60,6 +62,17 @@ export class WriteComponent {
     try {
       const post = await this.postsService.publishPost(title, content, new Uint8Array(0), toBytesN("", 32));
       console.log(post);
+
+      /* upload post content with received hash and metadata (to perform hash checks in backend) */
+      await firstValueFrom(this.postsContentService.uploadPostContent({
+        title: title,
+        content: content,
+        timestamp: post.timestamp,
+        authorAddress: post.authorAddress,
+        hash: post.postHash,
+        icon: "",
+        psHash: ""
+      }));
 
       alert("Thoughts shared successfully!");
       await this.router.navigate(["/home"]);
