@@ -2,12 +2,11 @@ import {Component, Inject} from '@angular/core';
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
-import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
-import {map, Observable, switchMap} from "rxjs";
-import {fromPromise} from "rxjs/internal/observable/innerFrom";
+import {map, Observable} from "rxjs";
 import {AsyncPipe} from "@angular/common";
-import {ethers, toBigInt} from "ethers";
 import {Router} from "@angular/router";
+import {AuthorService} from "../../service/author.service";
+import {formatEther} from "ethers";
 
 @Component({
   selector: 'app-buy',
@@ -23,15 +22,14 @@ import {Router} from "@angular/router";
 })
 export class BuyComponent {
 
-  tokenCost$: Observable<string>;
+  protected price$: Observable<string>;
 
   constructor(
-      @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
-      @Inject(Router) private router: Router
+      @Inject(Router) private router: Router,
+      @Inject(AuthorService) private authorService: AuthorService
   ) {
-    this.tokenCost$ = fromPromise(this.chainOfThoughtService.getContract()).pipe(
-      switchMap(contract => contract.getTokenValue()),
-      map(value => ethers.formatEther(value)+ " ETH")
+    this.price$ = this.authorService.author$.pipe(
+        map(author => `${formatEther(author.tokenPrice)} ETH`)
     );
   }
 
@@ -42,16 +40,12 @@ export class BuyComponent {
       return;
     }
 
-    const cost = await (await this.chainOfThoughtService.getContract()).getTokenValue() * toBigInt(parsedAmount);
-    (await this.chainOfThoughtService.getContract()).buyTokens({value: cost})
-      .then(() => {
-        alert("Tokens purchased successfully!");
-        this.router.navigate(["/home"]);
-      })
-      .catch((error) => {
-        console.error("Error purchasing tokens:", error);
-        alert("An error occurred while purchasing tokens. Please try again.");
-      });
+    try {
+      await this.authorService.buyTokens(parsedAmount);
+      alert("Tokens purchased successfully!");
+    }
+    catch {
+      alert("An error occurred while purchasing tokens. Please try again.");
+    }
   }
-
 }

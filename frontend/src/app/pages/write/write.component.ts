@@ -1,24 +1,20 @@
 import {Component, Inject} from '@angular/core';
 import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
 import {author, AuthorService} from "../../service/author.service";
-import {BehaviorSubject, filter, firstValueFrom, map, Observable, switchMap, tap} from "rxjs";
+import {map, Observable, switchMap} from "rxjs";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
-import {AsyncPipe, NgIf} from "@angular/common";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {Router} from "@angular/router";
 import {toBytesN} from "../../../util/toBytesN";
-import {Web3Service} from "../../service/web3.service";
 import {PostsService} from "../../service/posts.service";
 
 @Component({
   selector: 'app-write',
   imports: [
     TypewriterComponent,
-    AsyncPipe,
     ButtonComponent,
-    NgIf,
     WhenWriterFinishedDirective
   ],
   templateUrl: './write.component.html',
@@ -55,29 +51,15 @@ export class WriteComponent {
       return;
     }
 
-    const estimate = await (await this.chainOfThoughtService.getContract()).estimatePostCost(title, content, new Uint8Array(0), toBytesN("", 32));
+    const estimate = await this.postsService.getPostCostEstimate(title, content, new Uint8Array(0), toBytesN("", 32));
     const confirmed = confirm(`This post will cost ${estimate.toString()} thought tokens. Do you want to proceed?`);
     if (!confirmed) {
       return;
     }
 
-    const posts = await this.postsService.recordPublishedPosts();
-
-    const observable= fromPromise(
-        this.chainOfThoughtService.getContract()
-    ).pipe(
-        switchMap(contract => contract.publishPost(title, content, new Uint8Array(0), toBytesN("", 32))),
-    );
-
     try {
-      const result = await firstValueFrom(observable);
-
-      const resultPost = await firstValueFrom(posts.pipe(
-          map(posts => posts.find(post => post.transactionHash === result.hash)),
-          filter(post => post !== undefined),
-      ));
-
-      console.log(resultPost);
+      const post = await this.postsService.publishPost(title, content, new Uint8Array(0), toBytesN("", 32));
+      console.log(post);
 
       alert("Thoughts shared successfully!");
       await this.router.navigate(["/home"]);

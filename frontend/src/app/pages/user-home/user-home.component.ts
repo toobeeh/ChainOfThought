@@ -27,7 +27,6 @@ export class UserHomeComponent {
     author$: Observable<author>;
 
   constructor(
-      @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
       @Inject(AuthorService) private authorService: AuthorService
   ) {
       this.authorService.loadAuthor();

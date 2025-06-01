@@ -1,4 +1,3 @@
-import {environment as prodEnvironment} from './environment';
 import {cotEnvironment} from "./environment.interface";
 
 export const environment: cotEnvironment = {

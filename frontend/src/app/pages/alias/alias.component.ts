@@ -1,14 +1,11 @@
 import {Component, Inject} from '@angular/core';
-import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
 import {author, AuthorService} from "../../service/author.service";
-import {firstValueFrom, map, Observable, switchMap} from "rxjs";
-import {fromPromise} from "rxjs/internal/observable/innerFrom";
+import {Observable} from "rxjs";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
-import {AsyncPipe, NgIf} from "@angular/common";
+import {AsyncPipe} from "@angular/common";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {Router} from "@angular/router";
-import {toBytesN} from "../../../util/toBytesN";
 
 @Component({
   selector: 'app-alias',
@@ -16,7 +13,6 @@ import {toBytesN} from "../../../util/toBytesN";
     TypewriterComponent,
     AsyncPipe,
     ButtonComponent,
-    NgIf,
     WhenWriterFinishedDirective
   ],
   templateUrl: './alias.component.html',
@@ -25,19 +21,13 @@ import {toBytesN} from "../../../util/toBytesN";
 })
 export class AliasComponent {
 
-  changeCost$: Observable<number>;
   author$: Observable<author>;
 
   constructor(
-      @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
       @Inject(AuthorService) private authorService: AuthorService,
       @Inject(Router) private router: Router
   ) {
     this.author$ = this.authorService.author$;
-    this.changeCost$ = fromPromise(this.chainOfThoughtService.getContract()).pipe(
-        switchMap(contract => contract.getRenamePrice()),
-        map(value => parseFloat(value.toString()))
-    );
   }
 
   public async rename(newAlias: string) {
@@ -46,12 +36,8 @@ export class AliasComponent {
       return;
     }
 
-    const observable= fromPromise(this.chainOfThoughtService.getContract()).pipe(
-      switchMap(contract => contract.changeAlias(toBytesN(newAlias, 20))),
-    );
-
     try {
-      await firstValueFrom(observable);
+      await this.authorService.renameAuthor(newAlias);
       alert("Alias changed successfully!");
       await this.router.navigate(["/home"]);
     }

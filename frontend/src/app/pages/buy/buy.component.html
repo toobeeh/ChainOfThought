@@ -21,6 +21,6 @@
 
     <label>Amount of thought tokens:</label>
     <input type="number" value="100" #amount>
-    <span>Current token cost: {{tokenCost$ | async}}</span>
+    <span>Current token cost: {{price$ | async}}</span>
     <app-button content="Buy tokens" style="width:auto" (click)="buy(amount.value)"  />
 </div>

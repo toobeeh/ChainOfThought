@@ -1,17 +1,13 @@
-import {Component, Inject, inject, OnInit} from '@angular/core';
-import {ButtonComponent} from "../button/button.component";
-import {ActivatedRoute, NavigationEnd, Router, RouterLink} from "@angular/router";
-import {BehaviorSubject, filter, map, Observable, tap} from "rxjs";
-import {AsyncPipe, NgClass, NgIf} from "@angular/common";
-import * as console from "console";
+import {Component, Inject, OnInit} from '@angular/core';
+import {NavigationEnd, Router, RouterLink} from "@angular/router";
+import {filter, map, Observable} from "rxjs";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {LinkComponent} from "../link/link.component";
 import {Web3Service} from "../../service/web3.service";
 
 @Component({
   selector: 'app-page',
   imports: [
-    ButtonComponent,
-    NgClass,
     AsyncPipe,
     LinkComponent,
     NgIf,

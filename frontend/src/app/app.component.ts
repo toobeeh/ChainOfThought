@@ -6,7 +6,7 @@ import {PageComponent} from "./components/page/page.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TypewriterComponent, ButtonComponent, PageComponent],
+  imports: [RouterOutlet, PageComponent],
   templateUrl: './app.component.html',
   standalone: true,
   styleUrl: './app.component.css'

@@ -11,7 +11,7 @@
             [characterDelay]="5"
             [cursorTimeout]="0"
             writerKey="alias-intro"
-            [content]="'your alias is the name that is visible to other authors when they read your post.\nchanging your alias costs ' + (changeCost$ | async) + ' thought tokens.\nenter your new alias below.'"
+            [content]="'your alias is the name that is visible to other authors when they read your post.\nchanging your alias costs ' + (author$ | async)?.renamePrice + ' thought tokens.\nenter your new alias below.'"
     />
 </p>
 

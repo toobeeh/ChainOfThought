@@ -13,12 +13,18 @@ import {
 import {Web3Service} from "./web3.service";
 import {ChainOfThoughtService} from "./chain-of-thought.service";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
+import {toBytesN} from "../../util/toBytesN";
+import {toBigInt} from "ethers";
 
 export interface author {
     alias: string;
     balance: number;
     address: string;
     rewardAvailable: boolean;
+    rewardTime: number;
+    rewardAmount: number;
+    renamePrice: number;
+    tokenPrice: bigint;
 }
 
 @Injectable({
@@ -42,16 +48,24 @@ export class AuthorService {
             contract.getAlias(),
             fromPromise(this.web3Service.getRequiredSigner()).pipe(switchMap(signer => signer.getAddress())),
             contract.getTokenBalance(),
-            contract.rewardAvailable()
+            contract.rewardAvailable(),
+            contract.getRewardInterval(),
+            contract.getRewardAmount(),
+            contract.getRenamePrice(),
+            contract.getTokenValue()
         ]).pipe(
 
             /* map to author when all emitted */
-            map(([alias, address, balance, rewardAvailable]) => {
+            map(([alias, address, balance, rewardAvailable, rewardTime, rewardAmount, renamePrice, tokenPrice]) => {
                 const author: author = {
                     alias,
                     balance: parseFloat(balance.toString()),
                     address,
-                    rewardAvailable
+                    rewardAvailable,
+                    rewardTime: Number(rewardTime),
+                    rewardAmount: Number(rewardAmount),
+                    renamePrice: Number(renamePrice),
+                    tokenPrice
                 };
                 return author;
             }),
@@ -68,4 +82,21 @@ export class AuthorService {
             filter(author => author !== undefined)
         );
     }
+
+    public async renameAuthor(newAlias: string): Promise<void> {
+        const contract = await this.chainOfThoughtService.getContract();
+        await contract.changeAlias(toBytesN(newAlias, 20));
+    }
+
+    public async buyTokens(amount: number): Promise<void> {
+        const contract = await this.chainOfThoughtService.getContract();
+        const cost = await contract.getTokenValue() * toBigInt(amount);
+        await contract.buyTokens({value: cost});
+    }
+
+    public async claimReward(): Promise<void> {
+        const contract = await this.chainOfThoughtService.getContract();
+        await contract.claimReward();
+    }
+
 }

@@ -11,7 +11,7 @@
             [characterDelay]="5"
             [cursorTimeout]="0"
             writerKey="reward-intro"
-            [content]="'every ' + formatSeconds((rewardTime$ | async) ?? 0) + ', you can claim ' + (rewardAmount$ | async) + ' thought tokens for free.'"
+            [content]="'every ' + formatSeconds((author$ | async)?.rewardTime ?? 0) + ', you can claim ' + (author$ | async)?.rewardAmount + ' thought tokens for free.'"
     />
 </p>
 
@@ -21,7 +21,7 @@
     <app-button
             *ngIf="(author$ | async)?.rewardAvailable; else unavailable"
             content="claim reward" style="width:auto"
-            (click)="getReward()"
+            (click)="claimReward()"
     />
     <ng-template #unavailable>
         <span>(sorry: ) the reward is not yet available to claim.</span>
