@@ -2,6 +2,7 @@ import {Inject, Injectable} from "@angular/core";
 import {ChainOfThoughtService} from "./chain-of-thought.service";
 import {BehaviorSubject, filter, firstValueFrom, map, Observable, of, Subject, timeout} from "rxjs";
 import {toBytesN} from "../../util/toBytesN";
+import {PostStatsStruct} from "../../../types/ethers-contracts/ChainOfThought";
 
 export interface recordedPublishedPost{
     authorAddress: string;
@@ -129,5 +130,10 @@ export class PostsService {
     public async addPostToFavorites(postHash: string): Promise<void> {
         const contract = await this.chainOfThoughtService.getContract();
         await contract.addPostToFavorites(postHash);
+    }
+
+    public async getPostStats(postHash: string): Promise<PostStatsStruct> {
+        const contract = await this.chainOfThoughtService.getContract();
+        return await contract.getPostStats(postHash);
     }
 }

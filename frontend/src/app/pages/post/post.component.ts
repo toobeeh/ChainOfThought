@@ -9,6 +9,7 @@ import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {ButtonComponent} from "../../components/button/button.component";
 import {author, AuthorService} from "../../service/author.service";
+import {PostStatsStruct} from "../../../../types/ethers-contracts/ChainOfThought";
 
 @Component({
   selector: 'app-post',
@@ -27,7 +28,7 @@ import {author, AuthorService} from "../../service/author.service";
 export class PostComponent implements OnInit {
 
   protected data$?: Observable<{post?: PostDto, alias: string, preview?: PostPreviewDto}>;
-  protected author$: Observable<author>;
+  protected stats$?: Observable<{author: author, post: PostStatsStruct}>;
 
   constructor(
       @Inject(PostsContentService) private postsContentService: PostsContentService,
@@ -36,7 +37,6 @@ export class PostComponent implements OnInit {
       @Inject(ActivatedRoute) private route: ActivatedRoute,
       @Inject(Router) private router: Router
   ) {
-      this.author$ = this.authorService.author$;
   }
 
   ngOnInit(): void {
@@ -60,6 +60,12 @@ export class PostComponent implements OnInit {
           );
         }),
     );
+
+      this.stats$ = this.authorService.author$.pipe(
+          switchMap(author => fromPromise(this.postsService.getPostStats(postId)).pipe(
+              map((stats) => ({author, post: stats})
+          ))
+      ));
   }
 
   getAuthorAlias(address: string): Promise<string> {

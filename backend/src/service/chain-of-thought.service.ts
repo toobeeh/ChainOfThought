@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {ChainOfThought, ChainOfThought__factory} from "../../types/ethers-contracts";
 import {JsonRpcProvider} from "ethers";
 
-const contractAddress = process.env.CONTRACT || '0x04C89607413713Ec9775E14b954286519d836FEf';
+const contractAddress = process.env.CONTRACT || '0x202CCe504e04bEd6fC0521238dDf04Bc9E8E15aB';
 const networkAddress = process.env.NETWORK || 'http://localhost:8545';
 
 @Injectable()

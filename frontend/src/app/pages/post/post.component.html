@@ -23,27 +23,41 @@
 
             <br>
 
-            <p>
-                <span class="date">{{(post.timestamp * 1000) | date:"short"}}</span>
-                ~
+            <div>
 
-                <ng-container *ngIf="author$ | async as author">
-                    <ng-container *ngIf="author.address === post.authorAddress">
-                        <span class="not-favorizable">one of your thoughts</span>
-                    </ng-container>
-                    <ng-container *ngIf="author.address !== post.authorAddress">
-                    <span class="favorite"
-                          *ngIf="!author.favorites.includes(post.hash); else favorite"
-                          (click)="addFavorite(post.hash)"
-                    >
-                        add to favorite thoughts
-                    </span>
-                        <ng-template #favorite>
-                            <span class="not-favorizable">one of your favorite thoughts</span>
-                        </ng-template>
-                    </ng-container>
+                <ng-container *ngIf="stats$ | async as stats">
+                    <p>
+                        ~ <span class="date">{{(post.timestamp * 1000) | date:"short"}}</span>
+                    </p>
+
+                    <p>
+                        ~
+                        <ng-container *ngIf="stats.author.address === post.authorAddress">
+                            <span class="not-favorizable">one of your thoughts</span>
+                        </ng-container>
+
+                        <ng-container *ngIf="stats.author.address !== post.authorAddress">
+                            <span class="favorite"
+                                  *ngIf="!stats.author.favorites.includes(post.hash); else favorite"
+                                  (click)="addFavorite(post.hash)"
+                            >
+                                add to favorite thoughts
+                            </span>
+                            <ng-template #favorite>
+                                <span class="not-favorizable">one of your favorite thoughts</span>
+                            </ng-template>
+                        </ng-container>
+                    </p>
+
+                    <p>
+                        ~ <span class="counter">{{stats.post.accesses}} reader(s)</span>
+                    </p>
+
+                    <p>
+                        ~ <span class="counter">{{stats.post.favorites}} favorite(s)</span>
+                    </p>
                 </ng-container>
-            </p>
+            </div>
         </div>
     </ng-container>
 

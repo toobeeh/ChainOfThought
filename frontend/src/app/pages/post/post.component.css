@@ -13,6 +13,10 @@
     user-select: none;
 }
 
+.counter {
+    opacity: .5;
+}
+
 .favorite:hover {
     opacity: 1;
 }

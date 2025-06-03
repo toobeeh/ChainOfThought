@@ -43,6 +43,7 @@ export class BuyComponent {
     try {
       await this.authorService.buyTokens(parsedAmount);
       alert("Tokens purchased successfully!");
+      await this.router.navigate(['/home']);
     }
     catch {
       alert("An error occurred while purchasing tokens. Please try again.");
