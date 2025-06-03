@@ -4,51 +4,66 @@
             <app-typewriter
                     [characterDelay]="20"
                     waitForWriter="post-author"
-                    writerKey="post-title" [content]="'„' + post.title + '”'"
+                    writerKey="post-title" [content]="'„' + post.post.title + '”'"
             />
         </h1>
 
-        <p class="author">
-            <app-typewriter
-                    [characterDelay]="5"
-                    [cursorTimeout]="0"
-                    writerKey="post-author"
-                    [content]="'a thought by ' + trim(data.alias)"
-            />
+        <p>
+            <span class="author">
+                <app-typewriter
+                        [characterDelay]="5"
+                        [cursorTimeout]="0"
+                        writerKey="post-author"
+                        [content]="'a thought by ' + trim(data.alias)"
+                />
+            </span>
+
+            <br>
+
+            <span *ngIf="data.post.psTo as ps" class="ps" routerLink="/read/{{ps.hash}}">
+                <app-typewriter
+                        [characterDelay]="5"
+                        [cursorTimeout]="0"
+                        writerKey="post-author"
+                        [content]="'ps to „' + ps.title + '”'"
+                />
+            </span>
         </p>
 
         <div *appWhenWriterFinished="'post-title'">
 
+            <br>
+
             <!-- content display -->
-            <p class="content">{{post.content}}</p>
+            <p class="content">{{post.post.content}}</p>
 
             <br>
 
             <!-- stats container -->
             <div>
-                <ng-container *ngIf="stats$ | async as stats">
+                <ng-container *ngIf="author$ | async as author">
 
                     <!-- date -->
                     <p>
-                        ~ <span class="date">{{(post.timestamp * 1000) | date:"short"}}</span>
+                        ~ <span class="date">{{(post.post.timestamp * 1000) | date:"short"}}</span>
                     </p>
 
                     <!-- access, favorite counter -->
                     <p>
-                        ~ <span class="counter">{{stats.post.accesses}} read, {{stats.post.favorites}} fav</span>
+                        ~ <span class="counter">{{data.post.stats.accesses}} read, {{data.post.stats.favorites}} fav</span>
                     </p>
 
                     <!-- favorite button -->
                     <p>
                         ~
-                        <ng-container *ngIf="stats.author.address === post.authorAddress">
+                        <ng-container *ngIf="author.address === post.post.authorAddress">
                             <span class="not-favorizable">one of your thoughts</span>
                         </ng-container>
 
-                        <ng-container *ngIf="stats.author.address !== post.authorAddress">
+                        <ng-container *ngIf="author.address !== post.post.authorAddress">
                             <span class="favorite"
-                                  *ngIf="!stats.author.favorites.includes(post.hash); else favorite"
-                                  (click)="addFavorite(post.hash)"
+                                  *ngIf="!author.favorites.includes(post.post.hash); else favorite"
+                                  (click)="addFavorite(post.post.hash)"
                             >
                                 add to favorite thoughts
                             </span>
@@ -56,15 +71,13 @@
                                 <span class="not-favorizable">one of your favorite thoughts</span>
                             </ng-template>
                         </ng-container>
-                    </p>
 
-                    <!-- ps button -->
-                    <p>
-                        ~ <span class="ps" (click)="writePs(post.hash)">write a ps</span>
+                        <!-- ps button -->
+                        , <span class="ps" (click)="writePs(post.post.hash)">write a ps</span>
                     </p>
 
                     <!-- posts that reference this one -->
-                    <ng-container *ngIf="stats.post.references.length > 0">
+                    <ng-container *ngIf="data.post.ps && data.post.ps.length > 0">
                         <br>
 
                         <!-- ps header -->
@@ -72,8 +85,8 @@
                             ~ <span class="counter">post scriptum</span>
                         </p>
 
-                        <p *ngFor="let ps of stats.post.references">
-                            {{ps}}
+                        <p class="ps" *ngFor="let ps of data.post.ps" routerLink="/read/{{ps.hash}}">
+                             „{{ps.title}}”
                         </p>
 
                     </ng-container>

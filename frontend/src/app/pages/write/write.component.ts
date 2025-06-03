@@ -46,7 +46,7 @@ export class WriteComponent {
 
   public async share(title: string, content: string, psHash?: string | undefined) {
     if(title.length < 1 || title.length > 50) {
-      alert("Title must be between 1 and 50 characters."); // TODO: test post constraints in blockchain tests
+      alert("Title must be between 1 and 50 characters.");
       return;
     }
 
@@ -77,8 +77,7 @@ export class WriteComponent {
         psHash
       }));
 
-      alert("Thoughts shared successfully!");
-      await this.router.navigate(["/home"]);
+      await this.router.navigate(["/read", post.postHash]);
     }
     catch (e) {
       alert((e as any).reason);

@@ -1,6 +1,7 @@
 Development 
 ===
-Dev setup & commands can be found here.
+Dev setup & commands can be found here.  
+> Warning: Generated files (like frontend and backend clients) are not committed and must be generated before running the application.
 
 ## Docker
 For simplicity, all services can be started using the provided docker compose file in `./docker/docker-compose.yml`.
@@ -32,11 +33,11 @@ Following commands are relevant:
 # Install dependencies
 npm install
 
-# Start the server
-npm run start:dev
-
 # Generate abi client types
 npm run generate:abi
+
+# Start the server
+npm run start:dev
 ```
 
 ## Frontend
@@ -46,9 +47,12 @@ Following commands are relevant:
 # Install dependencies
 npm install
 
+# Generate abi client
+npm run generate:abi
+
+# Generate backend service client
+npm run generate:api
+
 # Start the server
 npm run start
-
-# Generate abi client types
-npm run generate:abi
 ```
