@@ -290,7 +290,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _postStats[postHash].favorites += 1; // Increment favorites count
 
         // Emit events
-        emit PostAccessed(postHash, msg.sender);
+        emit PostFavorized(postHash, msg.sender);
         emit UserBalanceChanged(msg.sender, _thoughtTokenContract.balanceOf(msg.sender));
         emit UserBalanceChanged(owner, _thoughtTokenContract.balanceOf(owner));
     }

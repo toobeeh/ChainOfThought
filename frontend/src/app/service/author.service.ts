@@ -191,7 +191,7 @@ export class AuthorService {
     }
 
     private listenForPostAccessed(contract: ChainOfThought) {
-        return this.chainOfThoughtService.getEvents(contract, contract.filters.PostPublished, (postHash, address) => {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.PostAccessed, (postHash, address) => {
             const currentAuthor = this._author$.getValue();
             if(currentAuthor?.address === address) {
                 this._author$.next({

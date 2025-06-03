@@ -12,7 +12,7 @@
                 [characterDelay]="5"
                 [cursorTimeout]="0"
                 writerKey="read-intro"
-                [content]="'find thoughts published on the blockchain. reading a thought costs ' + (author$ | async)?.accessPrice + ' thought tokens once!'"
+                [content]="'find thoughts published on the blockchain. \nreading a thought once costs ' + (author$ | async)?.accessPrice + ' thought tokens!\n(which the author receives as a reward :)'"
         />
     </p>
 
