@@ -4,6 +4,12 @@
 
 .read {
     flex-grow: 1; /* uncomment to always align at top */
+    display: flex;
+    flex-direction: column;
+}
+
+.read h1, .read .filters, .read p {
+    align-self: center;
 }
 
 .filters {
