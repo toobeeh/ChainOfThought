@@ -1,6 +1,6 @@
 Chain Of Thought
 ====
-Chain of Thought is a decentralized application with a blog-like structure.  
+Chain of Thought is a decentralized application with a blog-like structure, written in solidity for the ethereum blockchain.  
 Users can share posts, reply to posts, and favorite posts.  
 
 Additionally, interacting with posts (writing, reading, ..) costs "thought tokens", which can be received for free on a daily basis, or purchased with ether.  

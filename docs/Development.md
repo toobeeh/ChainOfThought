@@ -6,7 +6,8 @@ Dev setup & commands can be found here.
 ## Docker
 For simplicity, all services can be started using the provided docker compose file in `./docker/docker-compose.yml`.  
 The docker compose file will build images for frontend, backend and a anvil instance with the contract deployed.  
-The docker compose is configured to start a ready-to-use, fresh application.
+The docker compose is configured to start a ready-to-use, fresh application with default anvil accounts and balances.  
+The frontend is accessible on `http://localhost:80`, the API is exposed on `http://localhost:3000/api` and features a swagger interface on `http://localhost:3000/docs`, and the anvil instance is available on `http://localhost:8545`.
 
 ## Blockchain
 For development, foundry is used to run the blockchain. 
