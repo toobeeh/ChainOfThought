@@ -19,17 +19,26 @@
 
         <div *appWhenWriterFinished="'post-title'">
 
+            <!-- content display -->
             <p class="content">{{post.content}}</p>
 
             <br>
 
+            <!-- stats container -->
             <div>
-
                 <ng-container *ngIf="stats$ | async as stats">
+
+                    <!-- date -->
                     <p>
                         ~ <span class="date">{{(post.timestamp * 1000) | date:"short"}}</span>
                     </p>
 
+                    <!-- access, favorite counter -->
+                    <p>
+                        ~ <span class="counter">{{stats.post.accesses}} read, {{stats.post.favorites}} fav</span>
+                    </p>
+
+                    <!-- favorite button -->
                     <p>
                         ~
                         <ng-container *ngIf="stats.author.address === post.authorAddress">
@@ -49,13 +58,25 @@
                         </ng-container>
                     </p>
 
+                    <!-- ps button -->
                     <p>
-                        ~ <span class="counter">{{stats.post.accesses}} reader(s)</span>
+                        ~ <span class="ps" (click)="writePs(post.hash)">write a ps</span>
                     </p>
 
-                    <p>
-                        ~ <span class="counter">{{stats.post.favorites}} favorite(s)</span>
-                    </p>
+                    <!-- posts that reference this one -->
+                    <ng-container *ngIf="stats.post.references.length > 0">
+                        <br>
+
+                        <!-- ps header -->
+                        <p>
+                            ~ <span class="counter">post scriptum</span>
+                        </p>
+
+                        <p *ngFor="let ps of stats.post.references">
+                            {{ps}}
+                        </p>
+
+                    </ng-container>
                 </ng-container>
             </div>
         </div>

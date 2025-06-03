@@ -11,7 +11,7 @@
             [characterDelay]="5"
             [cursorTimeout]="0"
             writerKey="write-intro"
-            [content]="'free your mind and write down your thoughts below.\neach character costs 1 thought tokens.\nstart writing below.'"
+            [content]="'free your mind and write down your thoughts.\neach character costs 1 thought tokens.\nstart writing below.'"
     />
 </p>
 
@@ -20,5 +20,16 @@
 <div *appWhenWriterFinished="'write-intro'" class="write-form">
     <input type="text" value="" placeholder="thought title" maxlength="50" #title>
     <textarea placeholder="your thoughts.." #content></textarea>
-    <app-button content="share thoughts" style="width:auto"  (click)="share(title.value, content.value)" />
+
+    <br>
+
+    <ng-container *ngIf="ps$ | async as ps; else noPs">
+        <span>this thought will appear as post scriptum to „{{ps.title}}”.</span>
+
+        <app-button content="share thoughts" style="width:auto"  (click)="share(title.value, content.value, ps.hash)" />
+    </ng-container>
+
+    <ng-template #noPs>
+        <app-button content="share thoughts" style="width:auto"  (click)="share(title.value, content.value)" />
+    </ng-template>
 </div>

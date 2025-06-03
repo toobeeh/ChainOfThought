@@ -7,7 +7,7 @@
     font-size: 1.2em;
 }
 
-.favorite {
+.favorite, .ps {
     opacity: .5;
     cursor: pointer;
     user-select: none;
@@ -17,7 +17,7 @@
     opacity: .5;
 }
 
-.favorite:hover {
+.favorite:hover, .ps:hover {
     opacity: 1;
 }
 

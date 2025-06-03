@@ -3,7 +3,7 @@ import {TypewriterComponent} from "../../components/typewriter/typewriter.compon
 import {PostDto, PostPreviewDto, PostsService as PostsContentService} from "../../../../api";
 import {ActivatedRoute, Router} from "@angular/router";
 import {BehaviorSubject, catchError, firstValueFrom, map, Observable, of, switchMap} from "rxjs";
-import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgForOf, NgIf} from "@angular/common";
 import {PostsService} from "../../service/posts.service";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
@@ -19,7 +19,8 @@ import {PostStatsStruct} from "../../../../types/ethers-contracts/ChainOfThought
         NgIf,
         WhenWriterFinishedDirective,
         DatePipe,
-        ButtonComponent
+        ButtonComponent,
+        NgForOf
     ],
   templateUrl: './post.component.html',
   standalone: true,
@@ -81,9 +82,17 @@ export class PostComponent implements OnInit {
       alert(`Thought added to favorites`);
   }
 
-  async unlockPost(hash: string) {
-      await this.postsService.unlockPost(hash);
+  async unlockPost(postHash: string) {
+      await this.postsService.unlockPost(postHash);
       this.ngOnInit();
+  }
+
+  async writePs(postHash: string){
+      await this.router.navigate(['/write'], {
+            queryParams: {
+                ps: postHash
+            }
+      });
   }
 
 }

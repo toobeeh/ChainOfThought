@@ -30,7 +30,7 @@ export class PostAccessService {
         const contract = await this.chainOfThoughtService.getContract();
 
         // calculate hash for provided data
-        const expectedHash = await contract.getPostHash(post.title, post.content,  new Uint8Array(0), toBytesN("", 32), post.authorAddress, post.timestamp);
+        const expectedHash = await contract.getPostHash(post.title, post.content,  new Uint8Array(0), post.psHash, post.authorAddress, post.timestamp);
 
         // check if post exists on-chain
         let postStats: Awaited<ReturnType<ChainOfThought["getPostStats"]>>;

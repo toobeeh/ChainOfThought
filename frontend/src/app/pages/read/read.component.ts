@@ -79,7 +79,9 @@ export class ReadComponent {
     if (hashes.length === 0) {
       return of([]);
     }
-    return this.postsContentService.findPostPreviews({hashes});
+    return this.postsContentService.findPostPreviews({hashes}).pipe(
+        map(posts => posts.sort((a, b) => b.timestamp - a.timestamp))
+    );
   }
 
   public getAuthorAlias(address: string): Promise<string> {
