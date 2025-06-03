@@ -8,7 +8,6 @@ export class AuthService {
 
     public attachIdentity(request: any): boolean {
         const address = getAuthenticatedAddress(request);
-        console.log(address);
         this._authenticatedAddress = address;
         return address !== undefined;
     }

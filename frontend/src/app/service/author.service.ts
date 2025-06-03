@@ -2,19 +2,17 @@ import {Inject, Injectable} from '@angular/core';
 import {
     BehaviorSubject,
     combineLatest,
-    combineLatestWith,
     filter,
     firstValueFrom,
     map,
     Observable, of,
-    switchMap,
     tap
 } from "rxjs";
 import {Web3Service} from "./web3.service";
 import {ChainOfThoughtService} from "./chain-of-thought.service";
-import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {toBytesN} from "../../util/toBytesN";
-import {toBigInt} from "ethers";
+import {ethers, toBigInt} from "ethers";
+import {ChainOfThought} from "../../../types/ethers-contracts/ChainOfThought";
 
 export interface author {
     alias: string;
@@ -36,15 +34,50 @@ export interface author {
 export class AuthorService {
 
     private _author$ = new BehaviorSubject<author | undefined>(undefined);
+    private _unsubscribeListeners?: () => void;
+    private initiated = false;
 
     constructor(
         @Inject(Web3Service) private web3Service: Web3Service,
         @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService
     ) { }
 
-    public async loadAuthor() {
+    public async ensureInitialized(): Promise<void> {
+        if(!this.initiated) await this.init();
+    }
 
+    public async ensureDestroyed(): Promise<void> {
+        if(this.initiated) this.destroy();
+    }
+
+    private async init() {
+        this.initiated = true;
         const contract = await this.chainOfThoughtService.getContract();
+
+        const unsubAlias = await this.listenForAliasChange(contract);
+        const unsubBalance = await this.listenForBalanceChange(contract);
+        const unsubFavorized = await this.listenForPostFavorized(contract);
+        const unsubPublished = await this.listenForPostPublished(contract);
+        const unsubAccessed = await this.listenForPostAccessed(contract);
+
+        this._unsubscribeListeners = () => {
+            unsubAlias();
+            unsubBalance();
+            unsubFavorized();
+            unsubPublished();
+            unsubAccessed();
+        };
+
+        await this.loadAuthor(contract);
+    }
+
+    private destroy() {
+        this.initiated = false;
+        this._author$.next(undefined);
+        this._unsubscribeListeners?.();
+    }
+
+    private async loadAuthor(contract: ChainOfThought) {
         const address = await (await this.web3Service.getRequiredSigner()).getAddress();
 
         /* collect author data */
@@ -107,6 +140,66 @@ export class AuthorService {
     public async claimReward(): Promise<void> {
         const contract = await this.chainOfThoughtService.getContract();
         await contract.claimReward();
+    }
+
+    private listenForAliasChange(contract: ChainOfThought) {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.AliasChanged, (address, alias) => {
+            const currentAuthor = this._author$.getValue();
+            if(currentAuthor?.address === address) {
+                this._author$.next({
+                    ...currentAuthor,
+                    alias: ethers.toUtf8String(alias)
+                });
+            }
+        });
+    }
+
+    private listenForBalanceChange(contract: ChainOfThought) {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.UserBalanceChanged, (address, balance) => {
+            const currentAuthor = this._author$.getValue();
+            if(currentAuthor?.address === address) {
+                this._author$.next({
+                    ...currentAuthor,
+                    balance: Number(balance)
+                });
+            }
+        });
+    }
+
+    private listenForPostFavorized(contract: ChainOfThought) {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.PostFavorized, (postHash, address) => {
+            const currentAuthor = this._author$.getValue();
+            if(currentAuthor?.address === address) {
+                this._author$.next({
+                    ...currentAuthor,
+                    favorites: [...currentAuthor.favorites, postHash],
+                });
+            }
+        });
+    }
+
+    private listenForPostPublished(contract: ChainOfThought) {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.PostPublished, (postHash, address) => {
+            const currentAuthor = this._author$.getValue();
+            if(currentAuthor?.address === address) {
+                this._author$.next({
+                    ...currentAuthor,
+                    accessList: [...currentAuthor.accessList, postHash],
+                });
+            }
+        });
+    }
+
+    private listenForPostAccessed(contract: ChainOfThought) {
+        return this.chainOfThoughtService.getEvents(contract, contract.filters.PostPublished, (postHash, address) => {
+            const currentAuthor = this._author$.getValue();
+            if(currentAuthor?.address === address) {
+                this._author$.next({
+                    ...currentAuthor,
+                    accessList: [...currentAuthor.accessList, postHash],
+                });
+            }
+        });
     }
 
 }

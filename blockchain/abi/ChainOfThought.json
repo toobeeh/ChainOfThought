@@ -787,6 +787,25 @@
   },
   {
     "type": "event",
+    "name": "PostFavorized",
+    "inputs": [
+      {
+        "name": "postHash",
+        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32"
+      },
+      {
+        "name": "reader",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "PostPublished",
     "inputs": [
       {

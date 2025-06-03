@@ -29,7 +29,6 @@ export class UserHomeComponent {
   constructor(
       @Inject(AuthorService) private authorService: AuthorService
   ) {
-      this.authorService.loadAuthor();
       this.author$ = this.authorService.author$;
   }
 

@@ -7,6 +7,7 @@ interface IChainOfThoughtEvents {
 
     event PostPublished(bytes32 indexed postHash, address indexed author, uint timestamp);
     event PostAccessed(bytes32 indexed postHash, address indexed reader);
+    event PostFavorized(bytes32 indexed postHash, address indexed reader);
     event AliasChanged(address indexed user, bytes20 newAlias);
     event UserBalanceChanged(address indexed user, uint newBalance);
 }

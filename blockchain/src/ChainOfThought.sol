@@ -185,8 +185,9 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _postStats[postHash] = postStats;
         _userPosts[msg.sender].push(postHash);
 
-        // Emit event
+        // Emit events
         emit PostPublished(postHash, msg.sender, block.timestamp);
+        emit UserBalanceChanged(msg.sender, _thoughtTokenContract.balanceOf(msg.sender));
 
         return postHash;
     }
@@ -253,8 +254,10 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _postAccessList[msg.sender].push(postHash);
         _postStats[postHash].accesses += 1; // Increment access count
 
-        // Emit event
+        // Emit events
         emit PostAccessed(postHash, msg.sender);
+        emit UserBalanceChanged(msg.sender, _thoughtTokenContract.balanceOf(msg.sender));
+        emit UserBalanceChanged(owner, _thoughtTokenContract.balanceOf(owner));
     }
 
     function addPostToFavorites(bytes32 postHash) external override {
@@ -286,8 +289,10 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _favoritePosts[msg.sender].push(postHash);
         _postStats[postHash].favorites += 1; // Increment favorites count
 
-        // Emit event
+        // Emit events
         emit PostAccessed(postHash, msg.sender);
+        emit UserBalanceChanged(msg.sender, _thoughtTokenContract.balanceOf(msg.sender));
+        emit UserBalanceChanged(owner, _thoughtTokenContract.balanceOf(owner));
     }
 
     function flagPostAsHidden(bytes32 postHash) external override onlyRole(MODERATOR_ROLE) {
@@ -335,6 +340,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         _aliasOwners[newAlias] = msg.sender; // Set new alias owner
 
         emit AliasChanged(msg.sender, newAlias);
+        emit UserBalanceChanged(msg.sender, _thoughtTokenContract.balanceOf(msg.sender));
     }
 
     function getAliasOf(address user) public view override returns (string memory) {
