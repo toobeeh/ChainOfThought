@@ -27,6 +27,7 @@ export class PostsController {
 
   @Post()
   @UseGuards(AuthGuard)
+  @ApiResponse({type: PostDto})
   async uploadPostContent(@Body() post: PostDto): Promise<PostDto> {
 
     if(!this.postAccessService.allowedToUpload(post)){
@@ -46,6 +47,7 @@ export class PostsController {
 
   @Get(":hash")
   @UseGuards(AuthGuard)
+  @ApiResponse({type: PostDto})
   async getPostByHash(@Param("hash") hash: string): Promise<PostDto> {
 
     if(! await this.postAccessService.hasAccessTo([hash])) {
@@ -61,6 +63,7 @@ export class PostsController {
 
   @Post("find")
   @UseGuards(AuthGuard)
+  @ApiResponse({type: [PostDto]})
   async findPosts(@Body() search: FindPostsDto): Promise<PostDto[]> {
 
     if(! await this.postAccessService.hasAccessTo(search.hashes)) {

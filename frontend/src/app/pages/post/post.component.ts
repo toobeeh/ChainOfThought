@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
-import {PostDto, PostsService as PostsContentService} from "../../../../api";
+import {PostDto, PostPreviewDto, PostsService as PostsContentService} from "../../../../api";
 import {ActivatedRoute, Router} from "@angular/router";
-import {BehaviorSubject, catchError, firstValueFrom, Observable, of, switchMap} from "rxjs";
+import {BehaviorSubject, catchError, firstValueFrom, map, Observable, of, switchMap} from "rxjs";
 import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {PostsService} from "../../service/posts.service";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
@@ -26,7 +26,7 @@ import {author, AuthorService} from "../../service/author.service";
 })
 export class PostComponent implements OnInit {
 
-  protected post?: Promise<[PostDto, string]>;
+  protected data$?: Observable<{post?: PostDto, alias: string, preview?: PostPreviewDto}>;
   protected author$: Observable<author>;
 
   constructor(
@@ -46,19 +46,20 @@ export class PostComponent implements OnInit {
       return;
     }
 
-    this.post = firstValueFrom(this.postsContentService.getPostByHash(postId).pipe(
-        switchMap(post => {
-          return fromPromise(this.getAuthorAlias(post.authorAddress)).pipe(
+    this.data$ = this.postsContentService.getPostByHash(postId).pipe(
+        map(post => ({post: post, preview: undefined})),
+        catchError(() => this.postsContentService.findPostPreviews({hashes: [postId]}).pipe(
+                map(posts => ({preview: posts[0], post: undefined}))
+            )
+        ),
+        switchMap(data => {
+          return fromPromise(this.getAuthorAlias((data.post ?? data.preview).authorAddress)).pipe(
             switchMap(alias => {
-              return of([post, alias] as [PostDto, string]);
+              return of({...data, alias} as {post?: PostDto, alias: string, preview?: PostPreviewDto});
             })
           );
         }),
-        catchError(() => {
-            this.router.navigate(['/read']);
-            throw new Error(`Post with hash ${postId} not found`);
-        })
-    ));
+    );
   }
 
   getAuthorAlias(address: string): Promise<string> {
@@ -72,6 +73,11 @@ export class PostComponent implements OnInit {
   async addFavorite(postHash: string) {
       await this.postsService.addPostToFavorites(postHash);
       alert(`Thought added to favorites`);
+  }
+
+  async unlockPost(hash: string) {
+      await this.postsService.unlockPost(hash);
+      this.ngOnInit();
   }
 
 }

@@ -1,48 +1,87 @@
-<ng-container *ngIf="post | async as post">
-    <h1>
-        <app-typewriter
-                [characterDelay]="20"
-                waitForWriter="post-author"
-                writerKey="post-title" [content]="'„' + post[0].title + '”'"
-        />
-    </h1>
+<ng-container *ngIf="data$ | async as data">
+    <ng-container *ngIf="data.post as post">
+        <h1>
+            <app-typewriter
+                    [characterDelay]="20"
+                    waitForWriter="post-author"
+                    writerKey="post-title" [content]="'„' + post.title + '”'"
+            />
+        </h1>
 
-    <p class="author">
-        <app-typewriter
-                [characterDelay]="5"
-                [cursorTimeout]="0"
-                writerKey="post-author"
-                [content]="'a thought by ' + trim(post[1])"
-        />
-    </p>
-
-    <div *appWhenWriterFinished="'post-title'">
-
-        <p class="content">{{post[0].content}}</p>
-
-        <br>
-
-        <p>
-            <span class="date">{{(post[0].timestamp * 1000) | date:"short"}}</span>
-            ~
-
-            <ng-container *ngIf="author$ | async as author">
-                <ng-container *ngIf="author.address === post[0].authorAddress">
-                    <span class="not-favorizable">one of your posts</span>
-                </ng-container>
-                <ng-container *ngIf="author.address !== post[0].authorAddress">
-                    <span class="favorite"
-                          *ngIf="!author.favorites.includes(post[0].hash); else favorite"
-                          (click)="addFavorite(post[0].hash)"
-                    >
-                        add to favorites
-                    </span>
-                    <ng-template #favorite>
-                        <span class="not-favorizable">one of your favorites</span>
-                    </ng-template>
-                </ng-container>
-            </ng-container>
+        <p class="author">
+            <app-typewriter
+                    [characterDelay]="5"
+                    [cursorTimeout]="0"
+                    writerKey="post-author"
+                    [content]="'a thought by ' + trim(data.alias)"
+            />
         </p>
-    </div>
+
+        <div *appWhenWriterFinished="'post-title'">
+
+            <p class="content">{{post.content}}</p>
+
+            <br>
+
+            <p>
+                <span class="date">{{(post.timestamp * 1000) | date:"short"}}</span>
+                ~
+
+                <ng-container *ngIf="author$ | async as author">
+                    <ng-container *ngIf="author.address === post.authorAddress">
+                        <span class="not-favorizable">one of your thoughts</span>
+                    </ng-container>
+                    <ng-container *ngIf="author.address !== post.authorAddress">
+                    <span class="favorite"
+                          *ngIf="!author.favorites.includes(post.hash); else favorite"
+                          (click)="addFavorite(post.hash)"
+                    >
+                        add to favorite thoughts
+                    </span>
+                        <ng-template #favorite>
+                            <span class="not-favorizable">one of your favorite thoughts</span>
+                        </ng-template>
+                    </ng-container>
+                </ng-container>
+            </p>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="data.preview as preview">
+
+        <h1>
+            <app-typewriter
+                    [characterDelay]="20"
+                    waitForWriter="post-author"
+                    writerKey="post-title" [content]="'„' + preview.title + '”'"
+            />
+        </h1>
+
+        <p class="author">
+            <app-typewriter
+                    [characterDelay]="5"
+                    [cursorTimeout]="0"
+                    writerKey="post-author"
+                    [content]="'a thought by ' + trim(data.alias)"
+            />
+        </p>
+
+        <div *appWhenWriterFinished="'post-title'">
+
+            <p>you do not have access to this thought yet. </p>
+            <app-button
+                    content="unlock thought"
+                    (click)="unlockPost(preview.hash)"
+            />
+
+            <br>
+
+            <p>
+                <span class="date">{{(preview.timestamp * 1000) | date:"short"}}</span>
+            </p>
+        </div>
+
+    </ng-container>
+
 
 </ng-container>
