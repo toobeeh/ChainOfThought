@@ -11,7 +11,7 @@ import {ChainOfThoughtService} from "./service/chain-of-thought.service";
   imports: [
       TypeOrmModule.forRoot({
         type: "sqlite",
-        database: "thoughtcloud.db",
+        database: "/data/thoughtcloud.db",
         entities: [PostEntity],
         synchronize: true
       }),

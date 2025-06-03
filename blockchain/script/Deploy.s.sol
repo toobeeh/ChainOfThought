@@ -10,6 +10,7 @@ contract BasicDeploymentScript {
         ThoughtToken thoughtToken = new ThoughtToken();
         ChainOfThought chainOfThought = new ChainOfThought(address (thoughtToken));
         thoughtToken.allowSupervisorFor(address(chainOfThought));
+        console.log("ChainOfThought deployed at:", address(chainOfThought));
     }
 }
 

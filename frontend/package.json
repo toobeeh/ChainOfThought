@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "generate:abi": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json",
-    "generate:api": "openapi-generator-cli generate -i http://localhost:3000/openapi.json -g typescript-angular -o api/ -p=removeOperationIdPrefix=true"
+    "generate:api": "openapi-generator-cli generate -i ../backend/dist/openapi.json -g typescript-angular -o api/ -p=removeOperationIdPrefix=true"
   },
   "private": true,
   "dependencies": {

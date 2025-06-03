@@ -1,45 +1,37 @@
 Chain Of Thought
 ====
+Chain of Thought is a decentralized application with a blog-like structure.  
+Users can share posts, reply to posts, and favorite posts.  
+
+Additionally, interacting with posts (writing, reading, ..) costs "thought tokens", which can be received for free on a daily basis, or purchased with ether.  
+The application features a simplistic typewriter-styled interface and targets a creative audience instead of imitating a social media blog.
+
+## Architecture
+
+A main consideration in the architecture is to offload the storage of the published posts from the blockchain.
+This results in four components:
 
 Parts of the application:
-- Thought Token Contract
-- Chain of Thought Contract
-- Thought Cloud Server
-- Chain of Thought Frontend
+- Thought Token contract (blockchain)
+- Chain of Thought contract (blockchain)
+- Thought Cloud server (NestJS REST API)
+- Chain of Thought Frontend (Angular frontend)
 
-The thought content server is used to offload the storage of the published posts from the blockchain.  
-The server needs to verify that the calling user really has the rights to access or publish a post.
+The blockchain and backend parts can generate interfaces (abi, openapi specs) which are used in other parts to scaffold type-safe code.  
+The repository provides a docker compose file to provide an easy way to test the application.
 
-## Thought Cloud
-The thought cloud is a server which stores the post content and metadata.  
-It exposes a REST API to the frontend.  
+### Thought Token Contract
+This contract is deployed on the blockchain and follows an ERC223 standard to implement ThoughtTokens, which are used by the application as currency.
 
-### Authenticationw
-Users need to authenticate with the REST API using a bearer token.  
-The bearer token consists of the Base64 of a signed nonce, proving the ownership of the user's address:
-```json
-{
-  "address": "0x1234...",
-  "message": "nonce",
-  "signature": "0x..."
-}
-```
+### Chain Of Thought Contract
+This contract is deployed on the blockchain and consists of all the business logic of the application.  
+It stores only metadata of the posts which are used for computation. 
 
-This can be obtained by the client by signing the nonce through metamask.  
-The token will be provided as Bearer token in the request header, which the server then can use to obtain and verify the sender's address. 
-This avoids the need to repeatedly sign transactions for posts that the user already has access to.
+### Thought Cloud
+The thought content server NestJs REST API with a SQLite database to store post contents.  
+The server implements authentication for reading and additionally authorization for uploading post data.
 
-### Reading Posts
-Posts need to be present in the user's access list in order to be readable.  
-Whenever the user requests a post content, the server will check using public functions fo the Chain of Thought contract if the user has access to the post.  
-Users access posts by their hash.
+### Chain Of Thought Frontend
+The application frontend is an angular application which accesses the blockchain through a browser provider like Metamask, and accesses post contents through the REST API of the Thought Cloud server.
 
-### Publishing Posts
-The contract does not store post content and metadata, but only its hash.
-To publish a post, the user needs to sign a transaction to the publish method of the contract, which will then be forwarded to the server.  
-The server decodes post content and metadata, adds it to the database, tries to execute the signed transaction and if that fails, it removes the post again.
 
-## Chain Of Thought
-
-Generate the abi:
-`forge inspect src/ChainOfThought.sol abi --json > ./abi/ChainOfThought.json`

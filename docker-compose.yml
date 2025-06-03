@@ -1,0 +1,37 @@
+services:
+
+  # A fresh anvil instance with the contract deployed at
+  # 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
+  blockchain:
+    build:
+      context: .
+      dockerfile: blockchain/.docker/Dockerfile
+    container_name: blockchain
+    volumes:
+      - ./data:/data
+    ports:
+      - "8545:8545"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/.docker/Dockerfile
+      args:
+        CONTENT_API_URL: "http://localhost:3000"
+        CHAIN_CONTRACT_ADDRESS: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    container_name: frontend
+    ports:
+      - "80:80"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/.docker/Dockerfile
+      args:
+        CHAIN_URL: "http://blockchain:8545"
+        CHAIN_CONTRACT_ADDRESS: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
+    container_name: backend
+    volumes:
+      - ./data:/data
+    ports:
+      - "3000:3000"

@@ -1,6 +1,30 @@
-Posting a new Post
+Content Service
 ====
+
+This application consists of a off-chain part, the content service (thought cloud).  
 Posts are stored partially on-chain and partially off-chain, because content and icon data can be large.  
+This document discusses some design considerations for the content service
+
+### Authentication
+Users need to authenticate with the REST API using a bearer token so that the content service can perform checks for an authenticated address.  
+The API uses a bearer token for authentication, consists of the Base64 of a signed nonce, proving the ownership of the user's address:
+```json
+{
+  "message": "nonce-presented-at-login",
+  "signature": "0x..."
+}
+```
+
+This can be obtained by the client by signing the nonce through metamask.  
+The token is provided as Bearer token in the request header, which the server uses to obtain and verify the sender's address.
+
+### Reading Posts
+Posts need to be present in the user's access list in order to be readable.  
+Whenever the user requests a post content, the server will check using public functions fo the Chain of Thought contract if the user has access to the post.  
+The API exposes reduced Preview DTOs, which can always be accessed, even if not in the access list.
+
+## Data Separation
+
 Following data is stored on-chain:
 - Post hash
 - Author address
@@ -18,7 +42,9 @@ Off chain, the remaining data is stored:
 - Ps hash
 - Timestamp
 
-## Ensuring authenticity
+## Writing Posts
+
+### Ensuring authenticity
 With the separated storage, a flow is needed to ensure that the content service post is exactly wht intended on-chain:
 - Post data must match with the data that the author paid for
 - Post data must not be uploadable in the name of another author

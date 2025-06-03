@@ -12,7 +12,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "generate:abi": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json"
+    "generate:abi": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json",
+    "generate:openapi": "npx ts-node ./scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

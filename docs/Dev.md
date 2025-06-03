@@ -4,7 +4,9 @@ Dev setup & commands can be found here.
 > Warning: Generated files (like frontend and backend clients) are not committed and must be generated before running the application.
 
 ## Docker
-For simplicity, all services can be started using the provided docker compose file in `./docker/docker-compose.yml`.
+For simplicity, all services can be started using the provided docker compose file in `./docker/docker-compose.yml`.  
+The docker compose file will build images for frontend, backend and a anvil instance with the contract deployed.  
+The docker compose is configured to start a ready-to-use, fresh application.
 
 ## Blockchain
 For development, foundry is used to run the blockchain. 
@@ -36,6 +38,9 @@ npm install
 # Generate abi client types
 npm run generate:abi
 
+# Generate openapi specs for the current backend
+npm run generate:openapi
+
 # Start the server
 npm run start:dev
 ```
@@ -50,7 +55,7 @@ npm install
 # Generate abi client
 npm run generate:abi
 
-# Generate backend service client
+# Generate backend service client - make sure to generate the openapi specs first in backend
 npm run generate:api
 
 # Start the server

@@ -1,0 +1,8 @@
+frontend/node_modules
+frontend/dist
+frontend/types
+frontend/api
+
+backend/node_modules
+backend/dist
+backend/types
