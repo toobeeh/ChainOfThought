@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
-import {ChainOfThought, ChainOfThought__factory} from "../../types/ethers-contracts";
 import {JsonRpcProvider} from "ethers";
-import {config} from "../config";
+import {config} from "../../config";
+import {ChainOfThought, ChainOfThought__factory} from "../../../types/ethers-contracts";
 
 
 @Injectable()

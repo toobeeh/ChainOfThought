@@ -3,5 +3,5 @@ const chainAddress = process.env.CHAIN_URL || 'http://localhost:8545';
 
 export const config = {
     contractAddress,
-    networkAddress: chainAddress,
+    networkAddress: chainAddress
 }

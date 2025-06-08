@@ -2,27 +2,27 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Get,
+  Get, Inject,
   NotFoundException,
   Param,
   Post,
   PreconditionFailedException,
   UseGuards
 } from '@nestjs/common';
-import {PostContentService} from "./service/post-content.service";
-import {FindPostsDto} from "./dto/findPosts.dto";
-import {PostPreviewDto} from "./dto/postPreview.dto";
-import {AuthGuard} from "./guard/auth.guard";
-import {PostAccessService} from "./service/post-access.service";
-import {PostDto} from "./dto/post.dto";
 import {ApiBearerAuth, ApiResponse} from "@nestjs/swagger";
+import {AuthGuard} from "../../guard/auth.guard";
+import {IContentService} from "../../service/content.service.interface";
+import {IAccessService} from "../../service/access.service.interface";
+import {PostDto} from "../../dto/post.dto";
+import {FindPostsDto} from "../../dto/findPosts.dto";
+import {PostPreviewDto} from "../../dto/postPreview.dto";
 
-@Controller("posts")
+@Controller("content")
 @ApiBearerAuth()
-export class PostsController {
+export class ContentController {
   constructor(
-      private readonly postService: PostContentService,
-      private readonly postAccessService: PostAccessService
+      @Inject(IContentService) private readonly postService: IContentService,
+      @Inject(IAccessService) private readonly postAccessService: IAccessService
   ) {}
 
   @Post()

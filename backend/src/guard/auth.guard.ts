@@ -1,11 +1,11 @@
-import {CanActivate, ExecutionContext, Injectable, Scope} from '@nestjs/common';
+import {CanActivate, ExecutionContext, Inject, Injectable, Scope} from '@nestjs/common';
 import {Observable} from 'rxjs';
-import {AuthService} from "../service/auth.service";
+import {IAuthService} from "../service/auth.service.interface";
 
 @Injectable({scope: Scope.REQUEST})
 export class AuthGuard implements CanActivate {
 
-    constructor(private readonly authService: AuthService) {}
+    constructor(@Inject(IAuthService) private readonly authService: IAuthService) {}
 
     canActivate(
         context: ExecutionContext,
