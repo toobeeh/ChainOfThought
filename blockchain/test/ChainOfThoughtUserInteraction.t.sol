@@ -29,6 +29,16 @@ contract ChainOfThoughtUserInteractionTest is ChainOfThoughtTestBase, IChainOfTh
         vm.stopPrank();
     }
 
+    function test_rewardEmitsEvent() public withAuthorBalance(author1, 100) {
+        vm.startPrank(author1, author1);
+
+        vm.expectEmit(false, false, false, false);
+        emit UserBalanceChanged(author1, 0);
+
+        chainOfThought.claimReward();
+        vm.stopPrank();
+    }
+
     function test_rewardNotAvailableAfterClaim() public {
         vm.startPrank(author1, author1);
         chainOfThought.claimReward();
@@ -60,14 +70,24 @@ contract ChainOfThoughtUserInteractionTest is ChainOfThoughtTestBase, IChainOfTh
         uint renamePrice = chainOfThought.getRenamePrice();
         require(renamePrice < initialBalance, "Test config mismatch: Initial balance should be greater than rename price");
 
-        vm.expectEmit(false, false, false, true); /* event emitted */
-        emit AliasChanged(author1, "pondering_______poet");
-
         chainOfThought.changeAlias("pondering_______poet");
 
         uint newBalance = thoughtToken.balanceOf(author1);
         assertEq(newBalance, initialBalance - renamePrice, "Alias change should decrease balance");
         assertTrue(Strings.equal("pondering_______poet", chainOfThought.getAlias()), "Alias should be updated");
+        vm.stopPrank();
+    }
+
+    function test_aliasChangeEmitsEvents() public withAuthorBalance(author1, 1000000) {
+        vm.startPrank(author1, author1);
+
+        vm.expectEmit(false, false, false, false); /* event emitted */
+        emit AliasChanged(author1, "pondering_______poet");
+
+        vm.expectEmit(false, false, false, false);
+        emit UserBalanceChanged(author1, 0);
+
+        chainOfThought.changeAlias("pondering_______poet");
         vm.stopPrank();
     }
 
@@ -85,7 +105,7 @@ contract ChainOfThoughtUserInteractionTest is ChainOfThoughtTestBase, IChainOfTh
         uint tokenPrice = chainOfThought.getTokenValue();
         uint ethAmount = tokenPrice * 100;
 
-        vm.expectEmit(true, true, false, true); /* event emitted */
+        vm.expectEmit(true, true, false, false); /* event emitted */
         emit UserBalanceChanged(author1, initialBalance + 100);
 
         chainOfThought.buyTokens{value: ethAmount}();

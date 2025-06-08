@@ -65,6 +65,12 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         grantRole(MODERATOR_ROLE, account);
     }
 
+    function payout() external onlyRole(OWNER_ROLE) {
+        uint balance = address(this).balance;
+        require(balance > 0, "No balance to withdraw");
+        payable(msg.sender).transfer(balance);
+    }
+
     // ======================
     // Contract Settings
 
@@ -145,6 +151,7 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
         bytes32 psPostHash
     ) external override returns (bytes32) {
         require(bytes(title).length > 0, "Title cannot be empty");
+        require(bytes(title).length <= 80, "Title cannot be longer than 80 characters");
         require(bytes(content).length > 0, "Content cannot be empty");
         require(icon.length == _iconByteLength || icon.length == 0, "Icon size exceeds maximum allowed size");
 
@@ -220,16 +227,16 @@ contract ChainOfThought is IChainOfThought, IERC223Recipient, AccessControl {
     function getAccessAllowedPostsOfUser(address author) external view override returns (bytes32[] memory) {
         bytes32[] memory accessedPosts = _postAccessList[author];
         bytes32[] memory writtenPosts = _userPosts[author];
-        bytes32[] memory allPosts = new bytes32[](accessedPosts.length + writtenPosts.length);
+        bytes32[] memory _allPosts = new bytes32[](accessedPosts.length + writtenPosts.length);
 
         uint index = 0;
         for (uint i = 0; i < accessedPosts.length; i++) {
-            allPosts[index++] = accessedPosts[i];
+            _allPosts[index++] = accessedPosts[i];
         }
         for (uint i = 0; i < writtenPosts.length; i++) {
-            allPosts[index++] = writtenPosts[i];
+            _allPosts[index++] = writtenPosts[i];
         }
-        return allPosts;
+        return _allPosts;
     }
 
     // ======================

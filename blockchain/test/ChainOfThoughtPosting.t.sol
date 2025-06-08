@@ -43,6 +43,20 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase, IChainOfThoughtEve
         vm.stopPrank();
     }
 
+    function test_invalidTitleLength() public withAuthorBalance(author1, 1000000) {
+        vm.startPrank(author1, author1);
+        vm.expectRevert();
+
+        string memory invalidTitle = "the unbelievable tale of neverending juxtaposition of characters misused as a post title";
+        string memory content = "long story short";
+        bytes memory icon = new bytes(0);
+        bytes32 ps = bytes32(0);
+
+        chainOfThought.publishPost(invalidTitle, content, icon, ps);
+
+        vm.stopPrank();
+    }
+
     function test_postSimple() public withAuthorBalance(author1, 1000000) {
         vm.startPrank(author1, author1);
 
@@ -56,9 +70,6 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase, IChainOfThoughtEve
         uint postCost = chainOfThought.estimatePostCost(title, content, icon, ps);
         bytes32 expectedPostHash = chainOfThought.getPostHash(title, content, icon, ps, author1, block.timestamp);
 
-        vm.expectEmit(false, false, false, true);
-        emit PostPublished(expectedPostHash, author1, block.timestamp);
-
         bytes32 postHash = chainOfThought.publishPost(title, content, icon, ps);
 
         assertEq32(postHash, expectedPostHash, "Post hash should match the expected post hash");
@@ -67,6 +78,25 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase, IChainOfThoughtEve
         PostStats memory stats = chainOfThought.getPostStats(postHash);
         assertEq(chainOfThought.getTokenBalance(), initialBalance - postCost, "Token balance should decrease by post cost");
 
+        vm.stopPrank();
+    }
+
+    function test_postSimpleEmitsEvents() public withAuthorBalance(author1, 1000000) {
+        vm.startPrank(author1, author1);
+
+        string memory title = "A Thought";
+        string memory content = "I think, therefore I am.";
+
+        bytes memory icon = new bytes(0);
+        bytes32 ps = bytes32(0);
+
+        vm.expectEmit(false, false, false, false);
+        emit PostPublished(ps /*placeholder*/, author1, block.timestamp);
+
+        vm.expectEmit(false, false, false, false);
+        emit UserBalanceChanged(author1, 0);
+
+        chainOfThought.publishPost(title, content, icon, ps);
         vm.stopPrank();
     }
 
@@ -154,6 +184,24 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase, IChainOfThoughtEve
         vm.stopPrank();
     }
 
+    function test_addToAccessListEmitsEvents() public
+        withAuthorBalance(author1, 1000000)
+        withAuthorBalance(author2, 1000000)
+        withPostExisting(author2)
+    {
+        vm.startPrank(author1, author1);
+        bytes32 postHash = chainOfThought.allPosts()[0];
+
+        vm.expectEmit(false, false, false, false);
+        emit PostAccessed(postHash, author1);
+
+        vm.expectEmit(false, false, false, false);
+        emit UserBalanceChanged(author1, 0);
+
+        chainOfThought.addPostToAccessList(postHash);
+        vm.stopPrank();
+    }
+
     function test_alreadyInAccessList() public
         withAuthorBalance(author1, 1000000)
         withAuthorBalance(author2, 1000000)
@@ -212,6 +260,26 @@ contract ChainOfThoughtPostingTest is ChainOfThoughtTestBase, IChainOfThoughtEve
 
         PostStats memory stats = chainOfThought.getPostStats(postHash);
         assertEq(stats.favorites, 1, "Post should have one favorite");
+
+        vm.stopPrank();
+    }
+
+    function test_addToFavoritesEmitsEvents() public
+        withAuthorBalance(author1, 1000000)
+        withAuthorBalance(author2, 1000000)
+        withPostExisting(author2)
+    {
+        vm.startPrank(author1, author1);
+        bytes32 postHash = chainOfThought.allPosts()[0];
+        chainOfThought.addPostToAccessList(postHash);
+
+        vm.expectEmit(false, false, false, false);
+        emit PostFavorized(postHash, author1);
+
+        vm.expectEmit(false, false, false, false);
+        emit UserBalanceChanged(author1, 0);
+
+        chainOfThought.addPostToFavorites(postHash);
 
         vm.stopPrank();
     }

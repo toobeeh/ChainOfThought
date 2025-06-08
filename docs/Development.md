@@ -9,6 +9,9 @@ The docker compose file will build images for frontend, backend and a anvil inst
 The docker compose is configured to start a ready-to-use, fresh application with default anvil accounts and balances.  
 The frontend is accessible on `http://localhost:80`, the API is exposed on `http://localhost:3000/api` and features a swagger interface on `http://localhost:3000/docs`, and the anvil instance is available on `http://localhost:8545`.
 
+To test the application frontend with metamask, the anvil network has to be added as custom network in metamask.  
+The, the default anvil accounts can be imported by their private keys.
+
 ## Blockchain
 For development, foundry is used to run the blockchain. 
 Following commands are relevant:
