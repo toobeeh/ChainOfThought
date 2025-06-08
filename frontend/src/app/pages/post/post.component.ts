@@ -123,6 +123,11 @@ export class PostComponent implements OnInit, OnDestroy {
     }
 
     async unlockPost(postHash: string) {
+        const author = await firstValueFrom(this.authorService.author$);
+        if(author.balance < author.accessPrice) {
+            alert(`Your balance (${author.balance} tokens) is not enough to unlock this thought (${author.accessPrice}).`);
+            return;
+        }
         await this.postsService.unlockPost(postHash);
         this.ngOnInit();
     }

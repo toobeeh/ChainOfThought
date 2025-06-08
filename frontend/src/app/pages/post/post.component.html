@@ -48,14 +48,16 @@
                         ~ <span class="date">{{(post.post.timestamp * 1000) | date:"short"}}</span>
                     </p>
 
+                    <br>
+
                     <!-- access, favorite counter -->
                     <p>
-                        ~ <span class="counter">{{data.post.stats.accesses}} read, {{data.post.stats.favorites}} fav</span>
+                        <span class="counter">{{data.post.stats.accesses}} read, {{data.post.stats.favorites}} fav</span>
                     </p>
 
                     <!-- favorite button -->
                     <p>
-                        ~
+
                         <ng-container *ngIf="author.address === post.post.authorAddress">
                             <span class="not-favorizable">one of your thoughts</span>
                         </ng-container>
@@ -82,7 +84,7 @@
 
                         <!-- ps header -->
                         <p>
-                            ~ <span class="counter">post scriptum</span>
+                            <span class="counter">post scriptum</span>
                         </p>
 
                         <p class="ps" *ngFor="let ps of data.post.ps" routerLink="/read/{{ps.hash}}">

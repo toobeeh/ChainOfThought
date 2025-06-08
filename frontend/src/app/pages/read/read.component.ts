@@ -1,7 +1,7 @@
 import {Component, Inject} from '@angular/core';
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {author, AuthorService} from "../../service/author.service";
-import {BehaviorSubject, forkJoin, map, Observable, of, Subject, switchMap, tap} from "rxjs";
+import {BehaviorSubject, firstValueFrom, forkJoin, map, Observable, of, Subject, switchMap, tap} from "rxjs";
 import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {PostFilterType, PostsService} from "../../service/posts.service";
 import {PostPreviewDto, PostsService as PostsContentService} from "../../../../api";
@@ -89,7 +89,15 @@ export class ReadComponent {
   }
 
     public async goToPost(hash: string, unlock: boolean = false) {
-        if(unlock) await this.postsService.unlockPost(hash);
+        if(unlock) {
+            const author = await firstValueFrom(this.authorService.author$);
+            if(author.balance < author.accessPrice) {
+                alert(`Your balance (${author.balance} tokens) is not enough to unlock this thought (${author.accessPrice}).`);
+                return;
+            }
+
+            await this.postsService.unlockPost(hash);
+        }
         await this.router.navigate(["/read", hash]);
     }
 
