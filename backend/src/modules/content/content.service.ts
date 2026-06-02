@@ -3,8 +3,8 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
 import {IContentService} from "../../service/content.service.interface";
 import {PostContentEntity} from "./entities/post-content.entity";
-import {PostDto} from "../../dto/post.dto";
-import {PostPreviewDto} from "../../dto/postPreview.dto";
+import {PostDto} from "./dto/post.dto";
+import {PostPreviewDto} from "./dto/postPreview.dto";
 
 @Injectable()
 export class ContentService implements IContentService {

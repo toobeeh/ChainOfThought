@@ -1,7 +1,7 @@
 import {Inject, Injectable, PreconditionFailedException, Scope} from '@nestjs/common';
 import {ChainOfThoughtService} from "./chain-of-thought.service";
 import {IAuthService} from "../../service/auth.service.interface";
-import {PostDto} from "../../dto/post.dto";
+import {PostDto} from "../content/dto/post.dto";
 import {ChainOfThought} from "../../../types/ethers-contracts";
 import {IAccessService} from "../../service/access.service.interface";
 

@@ -1,7 +1,7 @@
 import {Inject, Injectable, PreconditionFailedException, Scope} from "@nestjs/common";
 import {IAccessService} from "../../service/access.service.interface";
 import {IAuthService} from "../../service/auth.service.interface";
-import {PostDto} from "../../dto/post.dto";
+import {PostDto} from "../content/dto/post.dto";
 
 @Injectable({scope: Scope.REQUEST})
 export class OffchainPostAccessService implements IAccessService {
@@ -12,7 +12,7 @@ export class OffchainPostAccessService implements IAccessService {
     ) { }
 
     async hasAccessTo(postHashes: string[]) {
-        return false;
+        return false; // TODO
     }
 
     allowedToUpload(post: PostDto) {
@@ -21,6 +21,6 @@ export class OffchainPostAccessService implements IAccessService {
     }
 
     async getIntegrousPostHash(post: PostDto): Promise<string> {
-        return "";
+        return ""; // TODO
     }
 }

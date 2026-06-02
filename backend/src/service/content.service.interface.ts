@@ -1,5 +1,5 @@
-import {PostDto} from "../dto/post.dto";
-import {PostPreviewDto} from "../dto/postPreview.dto";
+import {PostDto} from "../modules/content/dto/post.dto";
+import {PostPreviewDto} from "../modules/content/dto/postPreview.dto";
 
 export const IContentService = Symbol("IContentService");
 

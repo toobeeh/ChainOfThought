@@ -1,7 +1,8 @@
 import {ForbiddenException, Inject, Injectable, Scope} from "@nestjs/common";
 import {IAuthService} from "../../service/auth.service.interface";
-import {PostDto} from "../../dto/post.dto";
+import {PostDto} from "../content/dto/post.dto";
 import {getAuthenticatedAddress} from "../../util/getAuthenticatedAddress";
+import {getAuthenticatedId} from "../../util/getAuthenticatedId";
 
 @Injectable({scope: Scope.REQUEST})
 export class OffchainAuthService implements IAuthService {
@@ -9,7 +10,7 @@ export class OffchainAuthService implements IAuthService {
     private _authenticatedAddress: string | undefined;
 
     attachIdentity(request: any): boolean {
-        const address = getAuthenticatedAddress(request);
+        const address = getAuthenticatedId(request);
         this._authenticatedAddress = address;
         return address !== undefined;
     }
@@ -20,4 +21,5 @@ export class OffchainAuthService implements IAuthService {
         }
         return this._authenticatedAddress;
     }
+
 }

@@ -13,9 +13,9 @@ import {ApiBearerAuth, ApiResponse} from "@nestjs/swagger";
 import {AuthGuard} from "../../guard/auth.guard";
 import {IContentService} from "../../service/content.service.interface";
 import {IAccessService} from "../../service/access.service.interface";
-import {PostDto} from "../../dto/post.dto";
-import {FindPostsDto} from "../../dto/findPosts.dto";
-import {PostPreviewDto} from "../../dto/postPreview.dto";
+import {PostDto} from "./dto/post.dto";
+import {FindPostsDto} from "./dto/findPosts.dto";
+import {PostPreviewDto} from "./dto/postPreview.dto";
 
 @Controller("content")
 @ApiBearerAuth()

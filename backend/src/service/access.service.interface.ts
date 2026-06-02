@@ -1,4 +1,4 @@
-import {PostDto} from "../dto/post.dto";
+import {PostDto} from "../modules/content/dto/post.dto";
 
 export const IAccessService = Symbol("IAccessService");
 
