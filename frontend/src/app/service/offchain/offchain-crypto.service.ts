@@ -11,10 +11,20 @@ export class OffchainCryptoService implements IAuthService {
     private _keyPair: SignKeyPair | undefined;
     private _identifier: string | undefined;
 
+    /**
+     * base64-encoded JSON string containing a message, signature, and public key.
+     * server can verify signature using public key.
+     * public key serves as identifier for user (address equivalent)
+     */
     getCurrentToken(): string | undefined {
         return sessionStorage.getItem("offchainAuth") ?? undefined;
     }
 
+    /**
+     * equivalent to signing a message using an existing wallet.
+     * here, a keypair is used to simulate wallet functionality.
+     * user can input an existing private key or generate a new one.
+     */
     async authenticate(): Promise<void> {
 
         /* ensure identity exists */
@@ -80,6 +90,9 @@ export class OffchainCryptoService implements IAuthService {
         this._identifier = publicKey;
     }
 
+    /**
+     * checks if user is authenticated by verifying presence of token and identifier.
+     */
     async isAuthenticated(): Promise<boolean> {
 
         // if there's a token but no identifier, try to authenticate (e.g. after page reload)
@@ -95,6 +108,9 @@ export class OffchainCryptoService implements IAuthService {
         this._identifier = undefined;
     }
 
+    /**
+     * returns the public key as a hex string, which serves as the user's address/identifier in this offchain implementation.
+     */
     getAddress(): Promise<string | undefined> {
         return Promise.resolve(this._identifier);
     }

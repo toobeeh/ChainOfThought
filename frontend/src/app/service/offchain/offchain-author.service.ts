@@ -18,12 +18,18 @@ export class OffchainAuthorService implements IAuthorService {
         @Inject(ListingService) private listingService: ListingService
     ) { }
 
+    /**
+     * Equivalent of loading author data from the blockchain
+     */
     public async ensureInitialized(): Promise<void> {
         if(!this.initiated) {
             await this.loadAuthor();
         }
     }
 
+    /**
+     * Unload author data to cleanup for next login
+     */
     public async ensureDestroyed(): Promise<void> {
         this._author$.next(undefined);
         this.initiated = false;
@@ -64,6 +70,9 @@ export class OffchainAuthorService implements IAuthorService {
         return authorData;
     }
 
+    /**
+     * Not needed in the blockchain version because of event listeners
+     */
     public async refreshAuthor(): Promise<void> {
         await this.loadAuthor();
     }
@@ -74,6 +83,10 @@ export class OffchainAuthorService implements IAuthorService {
         );
     }
 
+    /**
+     * Equivalent of rename author transaction, but done via API call
+     * @param newAlias
+     */
     public async renameAuthor(newAlias: string): Promise<void> {
         const address = await this.authService.getAddress();
         if(address === undefined) {
@@ -85,10 +98,17 @@ export class OffchainAuthorService implements IAuthorService {
         await this.refreshAuthor();
     }
 
+    /**
+     * No equivalent to buying tokens via crypto currency
+     * @param amount
+     */
     public async buyTokens(amount: number): Promise<void> {
         alert("Buying tokens is not implemented in the offchain version.");
     }
 
+    /**
+     * Equivalent of claiming rewards via blockchain transaction, but done via API call
+     */
     public async claimReward(): Promise<void> {
         const address = await this.authService.getAddress();
         if(address === undefined) {

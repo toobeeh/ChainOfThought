@@ -34,7 +34,8 @@ export class OffchainPostsService implements IPostsService {
     ) { }
 
     /**
-     * Creates an observable that polls for posts or self-published posts
+     * creates an observable that polls for posts or self-published posts
+     * equivalent to listening for blockchain events
      */
     public async recordPublishedPosts() {
         return this._postPublished$.pipe(
@@ -60,6 +61,13 @@ export class OffchainPostsService implements IPostsService {
         );
     }
 
+    /**
+     * Equivalent to publish transaction, but via api call
+     * @param title
+     * @param content
+     * @param iconBytes
+     * @param psHash
+     */
     public async publishPost(
         title: string,
         content: string,
@@ -86,6 +94,13 @@ export class OffchainPostsService implements IPostsService {
         return recordedPost;
     }
 
+    /**
+     * Equivalent to estimating token cost of publish transaction, but via api call
+     * @param title
+     * @param content
+     * @param iconBytes
+     * @param psHash
+     */
     public async getPostCostEstimate(
         title: string,
         content: string,
@@ -102,6 +117,10 @@ export class OffchainPostsService implements IPostsService {
         ));
     }
 
+    /**
+     * Equivalent to fetching posts via blockchain state, but via api call with filter
+     * @param filter
+     */
     public async getPublishedPostHashes(filter: PostFilterType): Promise<string[]> {
 
         if(filter === PostFilterType.All){
@@ -127,22 +146,38 @@ export class OffchainPostsService implements IPostsService {
         ));
     }
 
+    /**
+     * Equivalent to fetching author alias via blockchain state, but via api call
+     * @param address
+     */
     public async getAuthorAlias(address: string): Promise<string> {
         return await firstValueFrom(this.userService.getUser(address).pipe(
             map(user => user.alias ?? address)
         ));
     }
 
+    /**
+     * Equivalent to accessing a post via blockchain transaction, but via api call
+     * @param postHash
+     */
     public async unlockPost(postHash: string): Promise<void> {
         await firstValueFrom(this.listingService.accessPost(postHash));
         await this.authorService.refreshAuthor();
     }
 
+    /**
+     * Equivalent to favoriting a post via blockchain transaction, but via api call
+     * @param postHash
+     */
     public async addPostToFavorites(postHash: string): Promise<void> {
         await firstValueFrom(this.listingService.favoritePost(postHash));
         await this.authorService.refreshAuthor();
     }
 
+    /**
+     * Equivalent to fetching post stats via blockchain state, but via api call
+     * @param postHash
+     */
     public async getPostStats(postHash: string): Promise<PostStatsStruct> {
         return await firstValueFrom(this.listingService.getPostStats(postHash).pipe(
             map(stats => ({
