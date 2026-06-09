@@ -15,4 +15,5 @@ The offchain module also implements controllers for al funcctions that the front
 The frontend can be built with an environment value which enables the offchain version.  
 Depending on this value, different services are used in DI.  
 To simulate a similar login functionality, a key pair is generated that is served to sign a token.  
-The only feature that can't be used is buying tokens.
+The only feature that can't be used is buying tokens.  
+To pass compilation, the offchain backend clients have to be generated even if the blockchain version is desired.

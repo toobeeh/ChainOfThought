@@ -1,21 +1,16 @@
 import {Inject, Injectable} from "@angular/core";
-import {ChainOfThoughtService} from "../chain-of-thought.service";
 import {
-    BehaviorSubject, distinctUntilChanged,
+    distinctUntilChanged,
     filter,
     firstValueFrom,
     interval,
     map,
     mergeWith,
-    Observable,
-    of, pairwise, scan, skip,
+    pairwise, scan,
     Subject, switchMap,
-    timeout
 } from "rxjs";
-import {toBytesN} from "../../../util/toBytesN";
 import {PostStatsStruct} from "../../../../types/ethers-contracts/ChainOfThought";
 import {IPostsService, PostFilterType, recordedPublishedPost} from "../posts.service.interface";
-import {PostsService} from "../../../../api/api/posts.service";
 import {ListingService, PublishService, UserService} from "../../../../api";
 import {OffchainAuthorService} from "./offchain-author.service";
 

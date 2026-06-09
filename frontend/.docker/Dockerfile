@@ -23,11 +23,12 @@ COPY backend/ ./
 
 RUN npm run generate:abi
 RUN mkdir dist
-RUN npm run generate:openapi-blockchain
+RUN npm run generate:openapi-offchain
 
 FROM node:18 AS build
 ARG CONTENT_API_URL
 ARG CHAIN_CONTRACT_ADDRESS
+ARG ENABLE_OFFCHAIN_BACKEND
 
 # for openapi generator.. :/
 RUN apt-get update && apt-get install -y --no-install-recommends openjdk-17-jre-headless && rm -rf /var/lib/apt/lists/*
@@ -47,8 +48,8 @@ COPY frontend .
 
 RUN sed -i "s|%%CONTENT_API_URL%%|${CONTENT_API_URL}|g" src/environments/environment.ts
 RUN sed -i "s|%%CHAIN_CONTRACT_ADDRESS%%|${CHAIN_CONTRACT_ADDRESS}|g" src/environments/environment.ts
+RUN sed -i "s|%%ENABLE_OFFCHAIN_BACKEND%%|${ENABLE_OFFCHAIN_BACKEND}|g" src/environments/environment.ts
 
-RUN npm run
 RUN npm run generate:abi
 RUN npm run generate:api
 RUN npm run build
