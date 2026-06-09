@@ -5,6 +5,9 @@
 .content {
     white-space: pre;
     font-size: 1.2em;
+    max-width: 80vw;
+    white-space-collapse: preserve-breaks;
+    text-wrap-mode: wrap;
 }
 
 .favorite, .ps {

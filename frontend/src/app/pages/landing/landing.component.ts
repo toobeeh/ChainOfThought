@@ -20,7 +20,10 @@ export class LandingComponent {
     "a little poem might save (your) day :)",
     "stop deromantization of procrastination!",
     "take your time, write off your mind",
-    "let the cursor hypnotize you"
+    "poems don't always have to rhyme. they're just supposed to be creative.\n  (~ moonrise kingdom)",
+    "preserve creativity at all cost!",
+    "dear diary, you won't believe what happened today:",
+    "mansplain your world to me!"
   ];
   caption = this.selectRandomCaption();
 

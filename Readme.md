@@ -6,6 +6,10 @@ Users can share posts, reply to posts, and favorite posts.
 Additionally, interacting with posts (writing, reading, ..) costs "thought tokens", which can be received for free on a daily basis, or purchased with ether.  
 The application features a simplistic typewriter-styled interface and targets a creative audience instead of imitating a social media blog.
 
+### Offchain Version  
+To make the project more accessible, an offchain version has been integrated. For details, see `docs/Offchain.md`.  
+Blockchain functionality has not been tested since the refactor. For a tested state of source code, the "blockchain" tag has been created.
+
 ## Architecture
 
 A main consideration in the architecture is to offload the storage of the published posts from the blockchain.

@@ -117,7 +117,7 @@ export class OffchainDataService {
         balance.balance -= cost;
         await this.balanceRepository.save(balance);
 
-        const timestamp = Date.now();
+        const timestamp = Math.round(Date.now() / 1000);
         const post: PostDto = {
             hash: "", // calculate next
             authorAddress: id,
