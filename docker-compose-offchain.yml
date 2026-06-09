@@ -19,7 +19,7 @@ services:
     environment:
       THOUGHTCLOUD_BACKEND: "offchain"
     volumes:
-      - ./data:/data
+      - ./data:/app/backend/dist/src/data
     ports:
       - "3000:3000"
 
