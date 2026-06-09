@@ -48,7 +48,7 @@ Off chain, the remaining data is stored:
 With the separated storage, a flow is needed to ensure that the content service post is exactly wht intended on-chain:
 - Post data must match with the data that the author paid for
 - Post data must not be uploadable in the name of another author
-- Post data must only be uplaodable if paid for
+- Post data must only be uploadable if paid for
 - To posting process must not be visible to anyone else besides the author
 
 The initial concept was to sign a post transaction, which the content service would receive and execute.  

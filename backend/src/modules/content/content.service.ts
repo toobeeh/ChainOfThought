@@ -1,15 +1,16 @@
 import {Injectable, InternalServerErrorException} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import {InjectRepository} from '@nestjs/typeorm';
 import {In, Repository} from 'typeorm';
-import {PostEntity} from "../entities/post.entity";
-import {PostPreviewDto} from "../dto/postPreview.dto";
-import {PostDto} from "../dto/post.dto";
+import {IContentService} from "../../service/content.service.interface";
+import {PostContentEntity} from "./entities/post-content.entity";
+import {PostDto} from "./dto/post.dto";
+import {PostPreviewDto} from "./dto/postPreview.dto";
 
 @Injectable()
-export class PostContentService {
+export class ContentService implements IContentService {
     constructor(
-        @InjectRepository(PostEntity)
-        private postsRepository: Repository<PostEntity>,
+        @InjectRepository(PostContentEntity)
+        private postsRepository: Repository<PostContentEntity>,
     ) {}
 
     findAll(): Promise<PostDto[]> {
@@ -17,14 +18,14 @@ export class PostContentService {
     }
 
     async findByHash(hash: string): Promise<PostDto | null> {
-        const entity = await this.postsRepository.findOneBy({ hash });
-        if(entity === null) return null;
+        const entity = await this.postsRepository.findOneBy({hash});
+        if (entity === null) return null;
         return this.entityToDto(entity);
     }
 
     async create(post: PostDto): Promise<PostDto> {
         const entity = this.dtoToEntity(post);
-        if(await this.findByHash(post.hash) !== null) {
+        if (await this.findByHash(post.hash) !== null) {
             throw new InternalServerErrorException(`Post with hash ${post.hash} already exists`);
         }
         await this.postsRepository.save(entity);
@@ -32,7 +33,7 @@ export class PostContentService {
     }
 
     async findAllHashes(hashes: string[]): Promise<PostDto[]> {
-        return (await this.postsRepository.findBy({ hash: In(hashes) }))
+        return (await this.postsRepository.findBy({hash: In(hashes)}))
             .map(post => this.entityToDto(post));
     }
 
@@ -49,7 +50,7 @@ export class PostContentService {
         });
     }
 
-    private entityToDto(entity: PostEntity): PostDto {
+    private entityToDto(entity: PostContentEntity): PostDto {
         const dto = new PostDto();
         dto.hash = entity.hash;
         dto.authorAddress = entity.authorAddress;
@@ -61,7 +62,7 @@ export class PostContentService {
         return dto;
     }
 
-    private dtoToEntity(dto: PostDto): PostEntity {
+    private dtoToEntity(dto: PostDto): PostContentEntity {
         const entity = new PostDto();
         entity.hash = dto.hash;
         entity.authorAddress = dto.authorAddress;

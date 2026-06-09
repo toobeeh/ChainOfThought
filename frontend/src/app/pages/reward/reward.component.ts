@@ -1,13 +1,12 @@
 import {Component, Inject} from '@angular/core';
-import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
-import {author, AuthorService} from "../../service/author.service";
-import {firstValueFrom, map, Observable, switchMap} from "rxjs";
-import {fromPromise} from "rxjs/internal/observable/innerFrom";
+import {author} from "../../service/author.service.interface";
+import {Observable} from "rxjs";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {Router} from "@angular/router";
+import {IAuthorService} from "../../service/author.service.interface";
 
 @Component({
   selector: 'app-reward',
@@ -27,7 +26,7 @@ export class RewardComponent {
   author$: Observable<author>;
 
   constructor(
-      @Inject(AuthorService) private authorService: AuthorService,
+      @Inject(IAuthorService) private authorService: IAuthorService,
       @Inject(Router) private router: Router
   ) {
     this.author$ = this.authorService.author$;

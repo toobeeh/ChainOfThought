@@ -1,0 +1,26 @@
+services:
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/.docker/Dockerfile
+      args:
+        CONTENT_API_URL: "http://localhost:3000"
+        ENABLE_OFFCHAIN_BACKEND: "true"
+    container_name: frontend
+    ports:
+      - "80:80"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/.docker/Dockerfile
+    container_name: backend
+    environment:
+      THOUGHTCLOUD_BACKEND: "offchain"
+    volumes:
+      - ./data:/app/backend/dist/src/data
+    ports:
+      - "3000:3000"
+
+

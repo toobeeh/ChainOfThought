@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import {TypewriterComponent} from "./components/typewriter/typewriter.component";
 import {ButtonComponent} from "./components/button/button.component";
 import {PageComponent} from "./components/page/page.component";
+import {BackendSelectorService} from "./service/backend-selector.service";
 
 @Component({
   selector: 'app-root',
@@ -12,5 +13,9 @@ import {PageComponent} from "./components/page/page.component";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+
+  constructor(selectorService: BackendSelectorService) {
+    console.log("Selected backend:", selectorService.selectedBackend);
+  }
 
 }

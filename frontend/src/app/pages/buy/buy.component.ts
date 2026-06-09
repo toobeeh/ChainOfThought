@@ -5,8 +5,8 @@ import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished
 import {map, Observable} from "rxjs";
 import {AsyncPipe} from "@angular/common";
 import {Router} from "@angular/router";
-import {AuthorService} from "../../service/author.service";
 import {formatEther} from "ethers";
+import {IAuthorService} from "../../service/author.service.interface";
 
 @Component({
   selector: 'app-buy',
@@ -26,7 +26,7 @@ export class BuyComponent {
 
   constructor(
       @Inject(Router) private router: Router,
-      @Inject(AuthorService) private authorService: AuthorService
+      @Inject(IAuthorService) private authorService: IAuthorService
   ) {
     this.price$ = this.authorService.author$.pipe(
         map(author => `${formatEther(author.tokenPrice)} ETH`)

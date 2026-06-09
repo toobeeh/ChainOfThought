@@ -1,18 +1,19 @@
 import {ForbiddenException, Injectable, Scope} from '@nestjs/common';
-import {getAuthenticatedAddress} from "../util/getAuthenticatedAddress";
+import {getAuthenticatedAddress} from "../../util/getAuthenticatedAddress";
+import {IAuthService} from "../../service/auth.service.interface";
 
 @Injectable({scope: Scope.REQUEST})
-export class AuthService {
+export class BlockchainAuthService implements IAuthService {
 
     private _authenticatedAddress: string | undefined;
 
-    public attachIdentity(request: any): boolean {
+    attachIdentity(request: any): boolean {
         const address = getAuthenticatedAddress(request);
         this._authenticatedAddress = address;
         return address !== undefined;
     }
 
-    public get authenticatedAddress(): string {
+    get authenticatedAddress(): string {
         if (this._authenticatedAddress === undefined) {
             throw new ForbiddenException("No authenticated address recognized.");
         }

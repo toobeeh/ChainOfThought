@@ -1,9 +1,8 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
-import {PostDto, PostPreviewDto, PostsService as PostsContentService} from "../../../../api";
+import {PostDto, PostPreviewDto, ContentService as PostsContentService} from "../../../../api";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {
-    BehaviorSubject,
     catchError,
     firstValueFrom,
     map,
@@ -14,12 +13,13 @@ import {
     withLatestFrom
 } from "rxjs";
 import {AsyncPipe, DatePipe, NgForOf, NgIf} from "@angular/common";
-import {PostsService} from "../../service/posts.service";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {ButtonComponent} from "../../components/button/button.component";
-import {author, AuthorService} from "../../service/author.service";
+import {author} from "../../service/author.service.interface";
 import {PostStatsStruct} from "../../../../types/ethers-contracts/ChainOfThought";
+import {IAuthorService} from "../../service/author.service.interface";
+import {IPostsService} from "../../service/posts.service.interface";
 
 type postData =  {
     post?: { post: PostDto, ps?: PostPreviewDto[], psTo?: PostPreviewDto, stats: PostStatsStruct },
@@ -51,8 +51,8 @@ export class PostComponent implements OnInit, OnDestroy {
 
     constructor(
         @Inject(PostsContentService) private postsContentService: PostsContentService,
-        @Inject(AuthorService) private authorService: AuthorService,
-        @Inject(PostsService) private postsService: PostsService,
+        @Inject(IAuthorService) private authorService: IAuthorService,
+        @Inject(IPostsService) private postsService: IPostsService,
         @Inject(ActivatedRoute) private route: ActivatedRoute,
         @Inject(Router) private router: Router
     ) {

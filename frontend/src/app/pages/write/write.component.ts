@@ -1,15 +1,14 @@
 import {Component, Inject} from '@angular/core';
-import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
-import {author, AuthorService} from "../../service/author.service";
 import {firstValueFrom, map, Observable, of, switchMap} from "rxjs";
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
 import {ButtonComponent} from "../../components/button/button.component";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {ActivatedRoute, Router} from "@angular/router";
 import {toBytesN} from "../../../util/toBytesN";
-import {PostsService} from "../../service/posts.service";
-import {PostPreviewDto, PostsService as PostsContentService} from "../../../../api"
+import {PostPreviewDto, ContentService as PostsContentService} from "../../../../api"
 import {AsyncPipe, NgIf} from "@angular/common";
+import {author, IAuthorService} from "../../service/author.service.interface";
+import {IPostsService} from "../../service/posts.service.interface";
 
 @Component({
   selector: 'app-write',
@@ -30,8 +29,8 @@ export class WriteComponent {
   ps$: Observable<PostPreviewDto | undefined>;
 
   constructor(
-      @Inject(PostsService) private postsService: PostsService,
-      @Inject(AuthorService) private authorService: AuthorService,
+      @Inject(IPostsService) private postsService: IPostsService,
+      @Inject(IAuthorService) private authorService: IAuthorService,
       @Inject(Router) private router: Router,
       @Inject(ActivatedRoute) private route: ActivatedRoute,
       @Inject(PostsContentService) private postsContentService: PostsContentService

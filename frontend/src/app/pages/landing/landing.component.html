@@ -2,7 +2,21 @@
     <h1 class="deco">
         <app-typewriter [characterDelay]="50" writerKey="hero" [cursorTimeout]="0" [initialDelay]="500" [content]="hero" />
     </h1>
-    <app-typewriter [characterDelay]="50" waitForWriter="hero" [content]="caption" />
+    <app-typewriter [characterDelay]="50" waitForWriter="hero" writerKey="caption" [content]="caption" />
+
+    @if (!isBlockchainEnabled()) {
+
+        <app-typewriter style="opacity: .7; color: red" [characterDelay]="50" waitForWriter="caption" content="beware: this is the offchain demo version!" />
+    }
+
     <br>
-    <app-button waitForWriter="hero" content="sign & enter" (click)="authenticate()" />
+    <app-button waitForWriter="hero" [content]="isBlockchainEnabled() ? 'sign & enter' : 'login & enter'" (click)="authenticate()" />
+</div>
+
+<div style="position: fixed; top: 1rem; right: 1rem; display: none">
+    <app-button
+            waitForWriter="hero"
+            [content]="'switch to ' + (isBlockchainEnabled() ? 'offchain' : 'blockchain') "
+            (click)="toggleBackend()"
+    />
 </div>

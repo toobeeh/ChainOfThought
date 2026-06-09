@@ -1,29 +1,20 @@
 import {Module} from '@nestjs/common';
-import { PostsController } from './posts.controller';
+import {ContentModule} from "./modules/content/content.module";
+import {getBackendModule} from "./backendModuleFactory";
 import {TypeOrmModule} from "@nestjs/typeorm";
-import {PostEntity} from "./entities/post.entity";
-import {PostContentService} from "./service/post-content.service";
-import {AuthService} from "./service/auth.service";
-import {PostAccessService} from "./service/post-access.service";
-import {ChainOfThoughtService} from "./service/chain-of-thought.service";
 
 @Module({
   imports: [
       TypeOrmModule.forRoot({
-        type: "sqlite",
-        database: "/data/thoughtcloud.db",
-        entities: [PostEntity],
-        synchronize: true
+          type: "sqlite",
+          database: "./data/thoughtcloud.db",
+          autoLoadEntities: true,
+          synchronize: true
       }),
-      TypeOrmModule.forFeature([PostEntity])
+      ContentModule,
+      getBackendModule()
   ],
-  controllers: [PostsController],
-  providers: [
-      PostContentService,
-      AuthService,
-      ChainOfThoughtService,
-      PostAccessService
-  ],
+  providers: [],
 })
 export class AppModule {}
 

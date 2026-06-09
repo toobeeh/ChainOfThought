@@ -1,7 +1,7 @@
 import {Column, Entity, PrimaryColumn} from "typeorm";
 
 @Entity()
-export class PostEntity {
+export class PostContentEntity {
 
     @PrimaryColumn()
     hash: string

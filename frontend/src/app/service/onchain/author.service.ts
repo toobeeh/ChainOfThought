@@ -9,29 +9,16 @@ import {
     tap
 } from "rxjs";
 import {Web3Service} from "./web3.service";
-import {ChainOfThoughtService} from "./chain-of-thought.service";
-import {toBytesN} from "../../util/toBytesN";
+import {ChainOfThoughtService} from "../chain-of-thought.service";
+import {toBytesN} from "../../../util/toBytesN";
 import {ethers, toBigInt} from "ethers";
-import {ChainOfThought} from "../../../types/ethers-contracts/ChainOfThought";
-
-export interface author {
-    alias: string;
-    balance: number;
-    address: string;
-    rewardAvailable: boolean;
-    rewardTime: number;
-    rewardAmount: number;
-    renamePrice: number;
-    tokenPrice: bigint;
-    accessPrice: number;
-    accessList: string[];
-    favorites: string[];
-}
+import {ChainOfThought} from "../../../../types/ethers-contracts";
+import {author, IAuthorService} from "../author.service.interface";
 
 @Injectable({
     providedIn: 'root'
 })
-export class AuthorService {
+export class AuthorService implements IAuthorService {
 
     private _author$ = new BehaviorSubject<author | undefined>(undefined);
     private _unsubscribeListeners?: () => void;
