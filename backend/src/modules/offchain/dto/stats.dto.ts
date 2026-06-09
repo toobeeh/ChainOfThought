@@ -13,8 +13,8 @@ export class StatsDto {
     @ApiProperty()
     references: string[];
 
-    @ApiProperty()
-    referencedPost: string;
+    @ApiProperty({required: false})
+    referencedPost?: string;
 
     @ApiProperty()
     author: string;

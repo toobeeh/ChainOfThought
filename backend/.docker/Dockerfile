@@ -40,9 +40,10 @@ EXPOSE 3000
 
 WORKDIR /app/backend/dist/src
 
-## echo args to env
+## echo args to env and default to blockchain mode
 ENV CHAIN_URL=${CHAIN_URL}
 ENV CHAIN_CONTRACT_ADDRESS=${CHAIN_CONTRACT_ADDRESS}
+ENV THOUGHTCLOUD_BACKEND=blockchain
 
 # Start the app in production mode
 CMD ["node", "main.js"]

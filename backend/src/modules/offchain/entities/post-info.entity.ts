@@ -13,5 +13,5 @@ export class PostInfoEntity {
     hidden: boolean;
 
     @Column()
-    referencedHash: string;
+    referencedHash?: string;
 }

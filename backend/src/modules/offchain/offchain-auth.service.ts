@@ -17,7 +17,7 @@ export class OffchainAuthService implements IAuthService {
 
     get authenticatedAddress(): string {
         if (this._authenticatedAddress === undefined) {
-            throw new ForbiddenException("No authenticated address recognized.");
+            throw new ForbiddenException("No authenticated id recognized.");
         }
         return this._authenticatedAddress;
     }

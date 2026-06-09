@@ -1,14 +1,15 @@
 import {Component, Inject} from '@angular/core';
 import {TypewriterComponent} from "../../components/typewriter/typewriter.component";
-import {author, AuthorService} from "../../service/author.service";
-import {BehaviorSubject, firstValueFrom, forkJoin, map, Observable, of, Subject, switchMap, tap} from "rxjs";
+import {author} from "../../service/author.service.interface";
+import {BehaviorSubject, firstValueFrom, forkJoin, map, Observable, of, switchMap} from "rxjs";
 import {AsyncPipe, DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
-import {PostFilterType, PostsService} from "../../service/posts.service";
-import {PostPreviewDto, PostsService as PostsContentService} from "../../../../api";
+import {PostPreviewDto, ContentService as PostsContentService} from "../../../../api";
 import {WhenWriterFinishedDirective} from "../../directives/when-writer-finished.directive";
 import {ButtonComponent} from "../../components/button/button.component";
 import {fromPromise} from "rxjs/internal/observable/innerFrom";
 import {Router} from "@angular/router";
+import {IAuthorService} from "../../service/author.service.interface";
+import {IPostsService, PostFilterType} from "../../service/posts.service.interface";
 
 @Component({
   selector: 'app-read',
@@ -67,8 +68,8 @@ export class ReadComponent {
   );
 
   constructor(
-      @Inject(AuthorService) private authorService: AuthorService,
-      @Inject(PostsService) private postsService: PostsService,
+      @Inject(IAuthorService) private authorService: IAuthorService,
+      @Inject(IPostsService) private postsService: IPostsService,
       @Inject(PostsContentService) private postsContentService: PostsContentService,
       @Inject(Router) private router: Router
   ) {

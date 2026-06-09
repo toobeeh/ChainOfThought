@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {ChainOfThought, ChainOfThought__factory} from "../../../types/ethers-contracts";
-import {Web3Service} from "./web3.service";
+import {Web3Service} from "./onchain/web3.service";
 import {environment} from "../../environments/environment";
 import {TypedContractEvent, TypedListener} from "../../../types/ethers-contracts/common";
 import {Observable} from "rxjs";

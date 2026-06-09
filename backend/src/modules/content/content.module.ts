@@ -12,12 +12,6 @@ const services: Provider[] = [
 
 @Module({
     imports: [
-        TypeOrmModule.forRoot({
-            type: "sqlite",
-            database: "/data/thoughtcloud-content.db",
-            entities: [PostContentEntity],
-            synchronize: true
-        }),
         TypeOrmModule.forFeature([PostContentEntity]),
         getBackendModule()
     ],

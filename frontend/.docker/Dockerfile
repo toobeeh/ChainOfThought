@@ -23,7 +23,7 @@ COPY backend/ ./
 
 RUN npm run generate:abi
 RUN mkdir dist
-RUN npm run generate:openapi
+RUN npm run generate:openapi-blockchain
 
 FROM node:18 AS build
 ARG CONTENT_API_URL

@@ -1,89 +1,109 @@
 import {
-    Body,
     Controller,
     ForbiddenException,
     Get, Inject,
-    NotFoundException,
     Param,
     Post,
-    PreconditionFailedException,
     UseGuards
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiResponse} from "@nestjs/swagger";
 import {AuthGuard} from "../../guard/auth.guard";
-import {IContentService} from "../../service/content.service.interface";
-import {IAccessService} from "../../service/access.service.interface";
-import {PostDto} from "../content/dto/post.dto";
-import {FindPostsDto} from "../content/dto/findPosts.dto";
-import {PostPreviewDto} from "../content/dto/postPreview.dto";
-import {CostDto} from "./dto/cost.dto";
-import {DraftDto} from "./dto/draft.dto";
 import {PostHashDto} from "./dto/post-hash.dto";
 import {StatsDto} from "./dto/stats.dto";
+import {IAuthService} from "../../service/auth.service.interface";
+import {OffchainDataService} from "./offchain-data.service";
+import {config} from "../../config";
+import {SettingsDto} from "./dto/settings.dto";
 
 @Controller("posts")
-@ApiBearerAuth()
 export class ListingController {
     constructor(
-        @Inject(IContentService) private readonly postService: IContentService,
-        @Inject(IAccessService) private readonly postAccessService: IAccessService
+        @Inject(IAuthService) private readonly authService: IAuthService,
+        @Inject(OffchainDataService) private readonly offchainDataService: OffchainDataService
     ) {}
 
     @Get()
     @ApiResponse({type: [PostHashDto]})
     async findPosts(): Promise<PostHashDto[]> {
-        // TODO
+        const hashes = await this.offchainDataService.getAllPostHashes();
+        return hashes.map(hash => ({hash}));
     }
 
     @Get(":hash/stats")
     @ApiResponse({type: StatsDto})
-    async estimatePostCost(@Param("hash") hash: string): Promise<StatsDto> {
-        // TODO
+    async getPostStats(@Param("hash") hash: string): Promise<StatsDto> {
+        return await this.offchainDataService.getPostStats(hash);
     }
 
     @Get("favorites")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @ApiResponse({type: [PostHashDto]})
     async getFavorites(): Promise<PostHashDto[]> {
-        // TODO
+        const hashes = await this.offchainDataService.getUserFavorites(this.authService.authenticatedAddress);
+        return hashes.map(hash => ({hash}));
     }
 
     @Get("accesses")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @ApiResponse({type: [PostHashDto]})
     async getAccesses(): Promise<PostHashDto[]> {
-        // TODO
+        const hashes = await this.offchainDataService.getUserAccesses(this.authService.authenticatedAddress);
+        return hashes.map(hash => ({hash}));
     }
 
     @Get("written")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @ApiResponse({type: [PostHashDto]})
     async getWritten(): Promise<PostHashDto[]> {
-        // TODO
+        const hashes = await this.offchainDataService.getUserWritten(this.authService.authenticatedAddress);
+        return hashes.map(hash => ({hash}));
     }
 
     @Get("allowed")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     @ApiResponse({type: [PostHashDto]})
     async getUserAccessAllowed(): Promise<PostHashDto[]> {
-        // TODO
+        const hashes = await this.offchainDataService.getUserAccessAllowed(this.authService.authenticatedAddress);
+        return hashes.map(hash => ({hash}));
     }
 
     @Post(":hash/access")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     async accessPost(@Param("hash") hash: string) {
-        // TODO
+        await this.offchainDataService.accessPost(this.authService.authenticatedAddress, hash);
     }
 
     @Post(":hash/favorite")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     async favoritePost(@Param("hash") hash: string) {
-        // TODO
+        await this.offchainDataService.favoritePost(this.authService.authenticatedAddress, hash);
     }
 
     @Post(":hash/hide")
     @UseGuards(AuthGuard)
+    @ApiBearerAuth()
     async hidePost(@Param("hash") hash: string) {
-        // TODO
+        if(!config.offchainConfig.moderatorIds.includes(this.authService.authenticatedAddress)){
+            throw new ForbiddenException("Only moderators can hide posts");
+        }
+
+        await this.offchainDataService.hidePost(hash);
+    }
+
+    @Post("settings")
+    @ApiResponse({type: SettingsDto})
+    async getSettings(): Promise<SettingsDto> {
+        return {
+            rewardTime: config.offchainConfig.rewardInterval,
+            rewardAmount: config.offchainConfig.rewardAmount,
+            renamePrice: config.offchainConfig.renamePrice,
+            accessPrice: config.offchainConfig.accessPrice
+        }
     }
 }

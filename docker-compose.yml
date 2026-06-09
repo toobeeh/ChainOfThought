@@ -5,7 +5,7 @@ services:
   blockchain:
     build:
       context: .
-      dockerfile: blockchain/.docker/Dockerfile
+      dockerfile: blockchain/.docker/blockchain.Dockerfile
     container_name: blockchain
     volumes:
       - ./data:/data

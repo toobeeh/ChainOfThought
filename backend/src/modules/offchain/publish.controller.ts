@@ -7,31 +7,31 @@ import {
 } from '@nestjs/common';
 import {ApiBearerAuth, ApiResponse} from "@nestjs/swagger";
 import {AuthGuard} from "../../guard/auth.guard";
-import {IContentService} from "../../service/content.service.interface";
-import {IAccessService} from "../../service/access.service.interface";
 import {PostDto} from "../content/dto/post.dto";
 import {CostDto} from "./dto/cost.dto";
 import {DraftDto} from "./dto/draft.dto";
-import {PostHashDto} from "./dto/post-hash.dto";
+import {OffchainDataService} from "./offchain-data.service";
+import {IAuthService} from "../../service/auth.service.interface";
 
 @Controller("publish")
 @ApiBearerAuth()
+@UseGuards(AuthGuard)
 export class PublishController {
     constructor(
-        @Inject(IContentService) private readonly postService: IContentService,
-        @Inject(IAccessService) private readonly postAccessService: IAccessService
+        @Inject(OffchainDataService) private readonly offchainDataService: OffchainDataService,
+        @Inject(IAuthService) private readonly authService: IAuthService
     ) {}
 
     @Post("estimate")
-    @ApiResponse({type: PostDto})
+    @ApiResponse({type: CostDto})
     async estimatePostCost(@Body() draft: DraftDto): Promise<CostDto> {
-        // TODO
+        const cost = await this.offchainDataService.estimatePostCost(draft);
+        return {cost};
     }
 
     @Post("publish")
-    @UseGuards(AuthGuard)
     @ApiResponse({type: PostDto})
-    async postDraft(@Body() draft: DraftDto): Promise<PostHashDto> {
-        // TODO
+    async postDraft(@Body() draft: DraftDto): Promise<PostDto> {
+        return await this.offchainDataService.publishDraft(this.authService.authenticatedAddress, draft);
     }
 }

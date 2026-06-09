@@ -1,6 +1,5 @@
-import {ethers} from "ethers";
 import {Request} from "express";
-import * as crypto from "crypto";
+import * as nacl from "tweetnacl";
 
 interface AuthTokenPayload {
     message: string;
@@ -42,22 +41,18 @@ export function getAuthenticatedId(request: Request): string | undefined {
  * @returns The public key as id
  */
 function parseAndVerifyAuthToken(token: string): string {
-    const json = Buffer.from(token, 'base64').toString('utf-8');
+
+    const json = Buffer.from(token, "base64").toString("utf8");
     const parsed: AuthTokenPayload = JSON.parse(json);
 
-    const valid = crypto.verify(
-        'sha256',
-        Buffer.from(parsed.message),
-        {
-            key: Buffer.from(parsed.publicKey, 'hex'),
-            format: 'der',
-            type: 'spki'
-        },
-        Buffer.from(parsed.signature, 'hex')
+    const valid = nacl.sign.detached.verify(
+        new TextEncoder().encode(parsed.message),
+        Buffer.from(parsed.signature, "hex"),
+        Buffer.from(parsed.publicKey, "hex")
     );
 
     if (!valid) {
-        throw new Error('Invalid signature');
+        throw new Error("Invalid signature");
     }
 
     return parsed.publicKey;

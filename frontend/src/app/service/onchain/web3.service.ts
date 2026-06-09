@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {BrowserProvider, JsonRpcSigner} from "ethers";
+import {IAuthService} from "../auth.service.interface";
 
 interface web3State {
   provider: BrowserProvider,
@@ -10,7 +11,7 @@ interface web3State {
 @Injectable({
   providedIn: 'root'
 })
-export class Web3Service {
+export class Web3Service implements IAuthService {
 
   private _state: web3State | undefined;
 
@@ -24,7 +25,7 @@ export class Web3Service {
     return btoa(JSON.stringify(tokenPayload));
   }
 
-  public static getCurrentToken(): string | undefined {
+  public getCurrentToken(): string | undefined {
     const existingAuth = sessionStorage.getItem("web3auth");
     if (existingAuth && existingAuth.length > 0) {
       const [, token] = existingAuth.split(":");
@@ -92,6 +93,11 @@ export class Web3Service {
   public async isAuthenticated(): Promise<boolean> {
     const state = await this.getState();
     return state !== undefined;
+  }
+
+  public async getAddress() {
+    const state = await this.getState();
+    return state ? await state.signer.getAddress() : undefined;
   }
 
   public reset() {

@@ -1,13 +1,13 @@
 import {CanActivateFn, Router} from '@angular/router';
 import {inject} from "@angular/core";
-import {Web3Service} from "../service/web3.service";
-import {AuthorService} from "../service/author.service";
+import {IAuthService} from "../service/auth.service.interface";
+import {IAuthorService} from "../service/author.service.interface";
 
 export const authGuard: CanActivateFn = async (route, state) => {
-  const web3Service = inject(Web3Service);
-  const authorService = inject(AuthorService);
+  const authService = inject<IAuthService>(IAuthService);
+  const authorService = inject<IAuthorService>(IAuthorService);
   const router = inject(Router);
-  const authenticated = await web3Service.isAuthenticated();
+  const authenticated = await authService.isAuthenticated();
 
   if(authenticated) await authorService.ensureInitialized();
   else await authorService.ensureDestroyed();

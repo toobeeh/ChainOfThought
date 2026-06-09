@@ -7,5 +7,5 @@ export class RewardEntity {
     author: string;
 
     @Column()
-    timestamp: string;
+    timestamp: number;
 }

@@ -3,9 +3,9 @@ import {NavigationEnd, Router, RouterLink} from "@angular/router";
 import {filter, map, Observable} from "rxjs";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {LinkComponent} from "../link/link.component";
-import {Web3Service} from "../../service/web3.service";
 import {ChainOfThoughtService} from "../../service/chain-of-thought.service";
-import {AuthorService} from "../../service/author.service";
+import {IAuthService} from "../../service/auth.service.interface";
+import {IAuthorService} from "../../service/author.service.interface";
 
 @Component({
   selector: 'app-page',
@@ -25,9 +25,9 @@ export class PageComponent implements OnInit {
 
   constructor(
       @Inject(Router) private router: Router,
-      @Inject(Web3Service) private web3Service: Web3Service,
+      @Inject(IAuthService) private authService: IAuthService,
       @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService,
-      @Inject(AuthorService) private authorService: AuthorService
+      @Inject(IAuthorService) private authorService: IAuthorService
   ) {
   }
 
@@ -41,8 +41,8 @@ export class PageComponent implements OnInit {
   }
 
   exit(){
-    this.web3Service.reset();
-    this.chainOfThoughtService.reset();
+    this.authService.reset();
+    this.chainOfThoughtService.reset(); // TODO hide behind interface?
     this.authorService.ensureDestroyed();
     this.router.navigate(['/']);
   }

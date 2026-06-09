@@ -13,7 +13,8 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "generate:abi": "typechain --target ethers-v6 ../blockchain/abi/ChainOfThought.json",
-    "generate:openapi": "npx ts-node ./scripts/generate-openapi.ts"
+    "generate:openapi-blockchain": "cross-env THOUGHTCLOUD_BACKEND=blockchain npx ts-node ./scripts/generate-openapi.ts",
+    "generate:openapi-offchain": "cross-env THOUGHTCLOUD_BACKEND=offchain npx ts-node ./scripts/generate-openapi.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -26,6 +27,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "sqlite3": "^5.1.7",
+    "tweetnacl": "^1.0.3",
     "typeorm": "^0.3.24"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^22.15.23",
     "@types/supertest": "^6.0.2",
+    "cross-env": "^10.1.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",

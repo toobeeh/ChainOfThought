@@ -1,27 +1,14 @@
 import {Inject, Injectable} from "@angular/core";
-import {ChainOfThoughtService} from "./chain-of-thought.service";
+import {ChainOfThoughtService} from "../chain-of-thought.service";
 import {BehaviorSubject, filter, firstValueFrom, map, Observable, of, Subject, timeout} from "rxjs";
-import {toBytesN} from "../../util/toBytesN";
-import {PostStatsStruct} from "../../../types/ethers-contracts/ChainOfThought";
-
-export interface recordedPublishedPost{
-    authorAddress: string;
-    postHash: string;
-    transactionHash: string;
-    timestamp: number;
-}
-
-export enum PostFilterType {
-    All,
-    Favorite,
-    Own,
-    Read
-}
+import {toBytesN} from "../../../util/toBytesN";
+import {PostStatsStruct} from "../../../../types/ethers-contracts/ChainOfThought";
+import {IPostsService, PostFilterType, recordedPublishedPost} from "../posts.service.interface";
 
 @Injectable({
     providedIn: 'root'
 })
-export class PostsService {
+export class PostsService implements IPostsService {
 
     constructor(
         @Inject(ChainOfThoughtService) private chainOfThoughtService: ChainOfThoughtService
